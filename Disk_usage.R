@@ -1,27 +1,43 @@
+# select disk usage information based on a iplist
 rm(list = ls())
 
 # library
-library(methods)
-library(DBI)
 library(RMySQL)
+dir_data <- 'D:/Data/0427_xiaosong/'
 
-# test
-# rmysql.settingsfile<-"D:/Git/0427_xiaosong/my.cnf"
-# rmysql.db<-"pmdbe"
-# drv<-dbDriver("MySQL")
-# con<-dbConnect(drv, user = 'root', password = 'qwer1234',
-#                default.file=rmysql.settingsfile,group=rmysql.db) 
-
-# test 1
-drv<-dbDriver("MySQL")
-DB_name <- 'pmdbe'
-con <- dbConnect(drv, DB_name,
-                 groups = "Mysql_conn", 
-                 default.file = "D:/Git/Config/Mysql_conn")
-
-
-# DB configure
-# DB_name <- "pmdbe"
-# con <- dbConnect(dbDriver('MySQL'),dbname=DB_name,
-#                  user = 'root', password = 'qwer1234',
-#                  host = '202.114.10.172',port = 13306)
+# exec -> function(DB,Table) {
+  DB <- 'pmdbe'
+  Table <- 'd_disk_usage_sum_5'
+  # open a connection to remote Mysql server
+  drv<-dbDriver("MySQL")
+  con <- dbConnect(drv, DB,
+                   groups = "Mysql_conn", 
+                   default.file = "D:/Git/Config/Mysql_conn")
+  
+  
+  # read ip list
+  csv_file <- 'ip_0401_1231.csv'
+  csv_path <- paste(dir_data,csv_file,sep='')
+  ip_list <- read.csv(csv_path)
+  
+  # create table of ip list to join with disk usage tables
+  name.iptable = '0427_ip'
+  if (!dbExistsTable(con,name.iptable)) {
+    str.sql <- paste('CREATE TABLE ',name.iptable,' (ip varchar(128));',sep='')
+    dbSendQuery(con, str.sql)
+    dbWriteTable(con, name.iptable, ip_list,
+                 row.names = F, overwrite = T)
+  }
+  
+  
+  
+  
+  # tables for selection'
+  str.sql <- sprintf('SELECT a.* from %s a, %s b
+                     where a.ip = b.ip;', Table, name.iptable)
+#   r <- dbGetQuery(con,str.sql)
+  
+  
+  # on exit
+#   on.exit(dbRemoveTable(con,name.iptable))
+  on.exit(dbDisconnect(con))
