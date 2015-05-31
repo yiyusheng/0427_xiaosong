@@ -5,33 +5,41 @@ rm(list = ls())
 # library(RMySQL)
 dir_data <- 'D:/Data/0427_xiaosong/'
 in_name <- 'uwork_20120101-20131210.csv'
+in_name1 <- '¹ÊÕÏµ¥¾«¼ò_06-09.csv'
 out_name <- 'bad_pre(0401_1231).csv'
 in_path <- paste(dir_data,in_name,sep='')
+in_path1 <- paste(dir_data,in_name1,sep='')
 out_path <- paste(dir_data,out_name,sep='')
 
 #read data
 data.fl <- read.csv(in_path)
+data.fl1 <- read.csv(in_path1)
 names(data.fl) <- c('id','svr_id','ip','ftype','ori_ftype',
                     'f_time','ftype_d1','ftype_d2','ftype_d')
-data.fl$ftype_d <- NULL
+names(data.fl1) <- c('id','svr_id','ip','ftype','idc','dev_class_name','dev_class_id',
+                     'dept_id','f_time','f_desc','ftype_d1','ftype_d2')
+col_need <- c('svr_id','ip','ftype','f_time','ftype_d1','ftype_d2')
+data.fl <- data.fl[,col_need]
+data.fl1 <- data.fl1[,col_need]
+data.fl <- rbind(data.fl,data.fl1)
 data.fl$f_time <- as.POSIXct(data.fl$f_time,tz = 'UTC')
 
 #del space
-data.fl$ftype[data.fl$ftype == 'ç¡¬ç›˜æ•…éšœï¼ˆæœ‰å†—ä½™ï¼‰ '] <- 'ç¡¬ç›˜æ•…éšœï¼ˆæœ‰å†—ä½™ï¼‰'
+data.fl$ftype[data.fl$ftype == 'Ó²ÅÌ¹ÊÕÏ£¨ÓÐÈßÓà£© '] <- 'Ó²ÅÌ¹ÊÕÏ£¨ÓÐÈßÓà£©'
 data.fl$ftype <- factor(data.fl$ftype)
 
 #add class
 data.fl$class <- -1
-# data.replace <- subset(data.fl,ftype_d1 == 'ç¡¬ç›˜æ•…éšœ;' | ftype_d2 == 'ç¡¬ç›˜æ•…éšœ;')
-ftlist <- c(ç¡¬ç›˜æ•…éšœï¼ˆæœ‰å†—ä½™ï¼‰,ç¡¬ç›˜æ•…éšœï¼ˆæœ‰å†—ä½™ï¼Œæ§½ä½æœªçŸ¥ï¼‰,
-            ç¡¬ç›˜æ•…éšœï¼ˆæ— å†—ä½™ï¼‰,ç¡¬ç›˜æ•…éšœï¼ˆæ— å†—ä½™ï¼Œåœ¨çº¿æ¢ç›˜ï¼‰,
-            ç¡¬ç›˜å³å°†æ•…éšœï¼ˆæœ‰å†—ä½™ï¼‰,æ“ä½œç³»ç»Ÿç¡¬ç›˜æ•…éšœï¼ˆæ— å†—ä½™ï¼‰)
+# data.replace <- subset(data.fl,ftype_d1 == 'Ó²ÅÌ¹ÊÕÏ;' | ftype_d2 == 'Ó²ÅÌ¹ÊÕÏ;')
+ftlist <- c('Ó²ÅÌ¹ÊÕÏ£¨ÓÐÈßÓà£©','Ó²ÅÌ¹ÊÕÏ£¨ÓÐÈßÓà£¬²ÛÎ»Î´Öª£©',
+            'Ó²ÅÌ¹ÊÕÏ£¨ÎÞÈßÓà£©','Ó²ÅÌ¹ÊÕÏ£¨ÎÞÈßÓà£¬ÔÚÏß»»ÅÌ£©',
+            'Ó²ÅÌ¼´½«¹ÊÕÏ£¨ÓÐÈßÓà£©','²Ù×÷ÏµÍ³Ó²ÅÌ¹ÊÕÏ£¨ÎÞÈßÓà£©')
 
 
 for (i in 1:length(ftlist)){
   data.fl$class[data.fl$ftype == ftlist[i]] <- i
   data.fl$class[data.fl$ftype == ftlist[i] & 
-                  (data.fl$ftype_d1 == 'ç¡¬ç›˜æ•…éšœ;' | data.fl$ftype_d2 == 'ç¡¬ç›˜æ•…éšœ;')] <- i+6
+                  (data.fl$ftype_d1 == 'Ó²ÅÌ¹ÊÕÏ;' | data.fl$ftype_d2 == 'Ó²ÅÌ¹ÊÕÏ;')] <- i+6
 }
 
 

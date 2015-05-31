@@ -1,4 +1,4 @@
-#FUNCTION SET
+#FUNCTION SETS
 rm(list = ls())
 #################################################################################################
 #@@@ data preprocess :
@@ -136,9 +136,6 @@ data_featureB <- function(data.du,data.ip){
   }  
   return(ftr)
 }
-
-
-
 #################################################################################################
 #@@@ feature A
 data_featureA <- function(data.du,data.ip){
@@ -200,6 +197,7 @@ data_featureA <- function(data.du,data.ip){
 #@@@ main function
 #parameters
 dir_data <- 'D:/Data/0427_xiaosong/'
+dir_output <- 'D:/Data/0427_xiaosong/Output/Attr_density_quantile'
 flag_class <- 0 #1 for bad, 0 for good
 in_name.all <- 'alldata_delfactor.Rda'
 out_name.pre <- 'disk_usage_preprocess.Rda'
@@ -211,139 +209,63 @@ days_preserve <- 30
 # data_preprocess(data_all,data_good,data_bad,out_name.pre)
 
 # trancate time
-load(paste(dir_data,out_name.pre,sep=''))
-r <- time_truncate(data.du,data.ip,days_preserve)
-data.du <- r[[1]]
-data.ip <- r[[2]]
-
-#load and extract feature
-ftrA <- data_featureA(data.du,data.ip)
-ftrB <- data_featureB(data.du,data.ip)
-ftr <- cbind(ftrA,ftrB[match(ftrA$ip,ftrB$ip),2:ncol(ftrB)])
-
-# seperate good and bad
-ftr.good <- subset(ftr,class == 0)
-ftr.bad <- subset(ftr,class >= 7)
-save(ftr.good,ftr.bad,file = paste(dir_data,out_name.ftr,sep=''))
-# quantile of each ftr
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# idx.bg <- match(data_badgood$ip,data.ip$ip)
-# idx.bg <- idx.bg[!is.na(idx.bg)]
-# idx.ip <- match(data.ip$ip,data_badgood$ip)
-# idx.ip <- idx.ip[!is.na(idx.ip)]
-# data.ip$f_time <- as.POSIXct('2013-10-15',tz = 'UTC')
-# data.ip$f_time[idx.bg] <- 
-#   data_badgood$f_time[idx.ip]
-# data.ip$class[idx.bg] <- 
-#   data_badgood$class[idx.ip]
-# data.ip$fcount[idx.bg] <- 
-#   data_badgood$fcount[idx.ip]
-# data.ip$f_time <- as.POSIXct('1970-01-01')
-# data.ip$class <- -1
-# # good
-# idx.goodip <- match(data_good$ip,data.ip$ip)
-# idx.gooddata <- match(data.ip$ip,data_good$ip)
-# data.ip$f_time[idx.goodip[!is.na(idx.goodip)]] <- as.POSIXct('2013-10-15')
-# data.ip$class[idx.goodip[!is.na(idx.goodip)]] <- 0
-# # bad
-# idx.badip <- match(data_bad$ip,data.ip$ip)
-# idx.baddata <- match(data.ip$ip,data_bad$ip)
-# data.ip$f_time[idx.badip[!is.na(idx.badip)]] <- data_bad$f_time[idx.baddata[!is.na(idx.baddata)]]
-# data.ip$class[idx.badip[!is.na(idx.badip)]] <- 1
-# a <- subset(deldata.zero, ip %in% data_bad$ip)
-# b <- subset(deldata.sto_chg, ip %in% data_bad$ip)
-# c <- subset(deldata.dup, ip %in% data_bad$ip)
-# d <- subset(deldata.tdil, ip %in% data_bad$ip)
-# a$ip <- factor(a$ip)
-# b$ip <- factor(b$ip)
-# c$ip <- factor(c$ip)
-# d$ip <- factor(d$ip)
-# sta.total <- hist(log2(data_all$total),breaks = 0:25)
-# feature_extract(data.du,data.ip)
-# data.ip$f_time <- as.POSIXct(data.ip$f_time)
-# data.good <- subset(data_all,ip %in% data_good$ip)
-# data.bad <- subset(data_all, ip %in% data_bad%ip)
-# # f_time add
-# if (flag_class == 1){
-# data.ip$f_time <- data.ip_all[match(data.ip$ip,data.ip_all$ip),'f_time']
-# } else if (flag_class == 0){
-# data.ip$f_time <- as.POSIXct('2013-10-15')
-# }
-# data.ip$f_time <- as.POSIXct(data.ip$f_time)
-
-#========================================================================================================
-#feature extraction (mean,std of used during 3ds,7ds,15ds before and after time of failure)
-# extra_ftr <- function(cur_ip,f_time,cur_du) {
-#   if (unique(cur_du$ip) != cur_ip){
-#     print('EXTRA_FTR: wrong ip')
-#     return
-#   }
-#   cur.data.du <- cur_du
-#   itv <- c(-30,-27,-24,-21,-18,-15,-12,-9,-6,-3,0)*24*60*60
-#   time_point <- as.POSIXct(as.Date(f_time + itv))
-#   time_range <- cbind(time_point[1:(length(time_point)-1)],time_point[2:length(time_point)])
-#   names(time_range) <- c('start','end')
-#   ftr <- matrix(0,nrow = nrow(time_range),ncol = 2)
-#   for (i in 1:nrow(time_range)) {
-#     subset.curdu <- subset(cur.data.du, time >= time_range[i,1] & time < time_range[i,2])
-#     ftr[i,1] <- mean(subset.curdu$used_percent)
-#     ftr[i,2] <- sqrt(var(subset.curdu$used_percent)/length(subset.curdu$used_percent))
-#     #     ftr[i,3] <- length(subset.curdu$used_percent)
-#   }
-#   return(c(t(ftr)))
-# }
+# load(paste(dir_data,out_name.pre,sep=''))
+# r <- time_truncate(data.du,data.ip,days_preserve)
+# data.du <- r[[1]]
+# data.ip <- r[[2]]
 # 
-# data_featureB <- function(data.du,data.ip){
-#   col_name <- c('ip','f_time',
-#                 'b10_mean','b10_std',
-#                 'b9_mean','b9_std',
-#                 'b8_mean','b8_std',
-#                 'b7_mean','b7_std',
-#                 'b6_mean','b6_std',
-#                 'b5_mean','b5_std',
-#                 'b4_mean','b4_std',
-#                 'b3_mean','b3_std',
-#                 'b2_mean','b2_std',
-#                 'b1_mean','b1_std')
-#   ftr <- data.frame(matrix(,nrow = nrow(data.ip),ncol = length(col_name)))
-#   names(ftr) <- col_name
-#   ftr$ip <- data.ip$ip
-#   ftr$f_time <- data.ip$f_time
-#   
-#   # add a f_time column for data.du
-#   idx_ft <- match(data.du$ip,data.ip$ip)
-#   idx_list <- tapply(1:length(idx_ft),idx_ft,function(x)return(x))
-#   
-#   for (i in 1:nrow(data.ip)){
-#     print(i)
-#     cur_du <- data.du[idx_list[[i]],]
-#     ftr[i,3:ncol(ftr)] <- extra_ftr(ftr$ip[i],ftr$f_time[i],cur_du)
-#   }
-#   save(data.ip,data.du,ftr,file = paste(dir_data,out_name1,sep=''))
-#   return(ftr)
-# }
+# #load and extract feature
+# ftrA <- data_featureA(data.du,data.ip)
+# ftrB <- data_featureB(data.du,data.ip)
+# ftr <- cbind(ftrA,ftrB[match(ftrA$ip,ftrB$ip),2:ncol(ftrB)])
+# 
+# # seperate good and bad
+# ftr.good <- subset(ftr,class == 0)
+# ftr.bad <- subset(ftr,class >= 7)
+# save(ftr.good,ftr.bad,file = paste(dir_data,out_name.ftr,sep=''))
+
+# quantile of each ftr
+load(file.path(dir_data,out_name.ftr))
+ftr.good <- subset(ftr.good,total<=2e+6)
+ftr.bad <- subset(ftr.bad,total<=2e+6)
+ftr.good[is.na(ftr.good)] <- -1
+ftr.bad[is.na(ftr.bad)] <- -1
+quan.good <- data.frame(sapply(ftr.good[7:ncol(ftr.good)],function(x) quantile(x[x!=-1],seq(0,1,0.01))))
+quan.bad <- data.frame(sapply(ftr.bad[7:ncol(ftr.bad)],function(x) quantile(x[x!=-1],seq(0,1,0.01))))
+ftr.good$type <- 'good'
+ftr.bad$type <- 'bad'
+ftr <- rbind(ftr.good,ftr.bad)
+quan.good$type <- 'good'
+quan.bad$type <- 'bad'
+quan.good$quantile <- 0:100
+quan.bad$quantile <- 0:100
+quan <- rbind(quan.good[2:(nrow(quan.good)-1),],quan.bad[2:(nrow(quan.bad)-1),])
+
+#plot
+require(ggplot2)
+require(plyr)
+
+
+
+for (i in 7:(ncol(ftr)-1)){
+  attr <- names(ftr)[i]
+  eval(parse(text = sprintf('geo_aes <- aes(x = %s, color = type)',attr)))
+  plot.density <- ggplot(ftr) +
+    geom_density(geo_aes) +
+    ggtitle(paste(attr,'density',sep='_'))
+  out_name <- paste(attr,'density.jpg',sep='_')
+#   plot.density$labels$title <- 'Total Capacity(MB)'
+#   plot.density$labels$x <- 'Value of Total Capacity'
+  ggsave(file=file.path(dir_output,'density',out_name), plot=plot.density)
+}
+for (i in 1:(ncol(quan)-2)){
+  attr <- names(quan)[i]
+  eval(parse(text = sprintf('geo_aes <- aes(x = quantile, y = %s, color = type)',attr)))
+  plot.quantile <- ggplot(quan) + 
+    geom_point(geo_aes) + 
+    ggtitle(paste(attr,'quantile',sep='_'))
+  plot.quantile$labels$title <- 'Total Capacity'
+  plot.quantile$labels$y <- 'Total Capacity(MB)'
+  out_name <- paste(attr,'quantile.jpg',sep='_')
+  ggsave(file=file.path(dir_output,'quantile',out_name), plot=plot.quantile)
+}
