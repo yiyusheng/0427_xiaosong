@@ -20,14 +20,14 @@ entropy <- function(A,B) {
   return(list(entro = entro_A,entro_each = tmp))
 }
 ###################################################################################
-# read cmdb and generate disk information
+# 1. read cmdb and generate disk information
 # cmdb <- read.csv(file.path(dir_data,'cmdb1104_allattr.csv'))
 # load(file.path(dir_data,'cmdb.Rda'))
 # select.col <- c('svr_id','ip','svr_asset_id','dev_class_id',
 #                 'model_name','cpu','memory','dept_id','use_time','raid')
 # cmdb$use_time <- as.POSIXct(cmdb$use_time,tz = 'UTC')
 # 
-# # read ip and disk number in d_smart_1021.csv
+# # 2. read ip and disk number in d_smart_1021.csv
 # diskA_ip <- read.csv(file.path(dir_data,'d_smart_1021.csv'),head = F)
 # diskA <- diskA_ip[,1:2]
 # names(diskA) <- c('ip','device')
@@ -36,7 +36,7 @@ entropy <- function(A,B) {
 # diskA <- data.frame('ip' = names(disknum))
 # diskA$disknum <- as.numeric(disknum)
 # 
-# # read ip and disk number and diskA model in smart_Tencent_disk.csv
+# # 3. read ip and disk number and diskA model in smart_Tencent_disk.csv
 # diskB_ip <- read.csv(file.path(dir_data,'0303_smart_Tencent_disk.csv'),head = F)
 # diskBModel <- diskB_ip[,1:4]
 # names(diskBModel) <- c('sn','ip','device','model')
@@ -44,25 +44,29 @@ entropy <- function(A,B) {
 # diskBModel$model <- as.character(diskBModel$model)
 # diskBModel$model[diskBModel$model==''] <- 'NOMODEL'
 # diskBModel$model <- as.factor(diskBModel$model)
-# # merge diskBmodel and num_info
-# info.model <- read.csv(file.path(dir_data,'output','num_model.csv'))
+# 
+# # 4. merge diskBmodel and num_info
+# info.model <- read.csv(file.path(dir_data,'num_model.csv'))
 # diskBModel <- merge(diskBModel,info.model[,1:2],by.x = 'model',by.y = 'Model_ori',all.x = T)
 # diskBModel$Model_clear <- as.character(diskBModel$Model_clear)
 # diskBModel$Model_clear[is.na(diskBModel$Model_clear)] <- 'NOMODEL'
 # diskBModel$Model_clear <- factor(diskBModel$Model_clear)
-# #output disk model to search capacity of them
+# 
+# # 5. output disk model to search capacity of them
 # diskBModel$ipm <- paste(diskBModel$ip,diskBModel$Model_clear,sep='_')
 # table.ipm <- table(diskBModel$ipm)
 # disk_model <- strsplit(as.character(names(table.ipm)),'_')
 # disk_model <- data.frame(t(sapply(disk_model,c)))
 # disk_model$count <- as.numeric(table.ipm)
 # names(disk_model) <- c('ip','model','number')
-# # read model info
+# 
+# # 6. read model info
 # disk_model$model_ori <- disk_model$model
 # disk_model$model <- info.model$Model_clear[match(disk_model$model_ori,info.model$Model_ori)]
 # disk_model$model <- as.character(disk_model$model)
 # disk_model$model[!is.element(disk_model$model,info.model$Model_clear)] <- 'NOMODEL'
 # disk_model$model <- as.factor(disk_model$model)
+# 
 # #number
 # disknum <- table(diskBModel$ip)
 # diskB <- data.frame('ip' = names(disknum))
@@ -71,7 +75,7 @@ entropy <- function(A,B) {
 # # merge two dataset
 # disk <- rbind(diskA,diskB)
 # disk <- disk[!duplicated(disk['ip']),]
-# save(cmdb,disk,diskBModel,disk_model,file = file.path(dir_data,'output','disk_number_label.Rda'))
+# save(cmdb,disk,diskBModel,disk_model,file = file.path(dir_data,'disk_cmdb.Rda'))
 # disk是一个ip一行,disk_model是一个(ip,model)一行.
 ###################################################################################
 # #@@@ plot attribute and disk num
@@ -233,17 +237,20 @@ entropy <- function(A,B) {
 # a <- tapply(diskBModel$ip,diskBModel$ip,length)
 # a <- tapply(diskBModel$model,diskBModel$ip,length(unique))
 ###################################################################################
-#@@@ 给disk model添加硬盘信息.
-load(file.path(dir_data,'output','disk_number_label.Rda'))
-model_info <- read.csv(file.path(dir_data,'num_model.csv'))
-model_info <- model_info[!duplicated(model_info$Model_clear),]
+#@@@ 给CMDB数据添加DISK MODEL信息
+# 1. 给disk model添加容量,数量等信息
+load(file.path(dir_data,'disk_cmdb.Rda'))
+# model_info <- read.csv(file.path(dir_data,'num_model.csv'))
+# model_info <- model_info[!duplicated(model_info$Model_clear),]
 disk_model <- subset(disk_model,model!='NOMODEL')
-disk_model <- merge(disk_model,model_info,by.x = 'model',by.y = 'Model_clear',all.x = T)
+# disk_model <- merge(disk_model,model_info,by.x = 'model',by.y = 'Model_clear',all.x = T)
 disk_model$total <- disk_model$capacity*disk_model$number
 disk_model$Count <- NULL
 disk_model$Model_ori <- NULL
+disk_model$Discs <- disk_model$Discs*disk_model$number
+disk_model$Heads <- disk_model$Heads*disk_model$number
 
-#for ip
+# 2. 为有disk model的ip建立的表
 disk_ip <- data.frame(ip = levels(disk_model$ip),
                       total = as.numeric(tapply(disk_model$total,disk_model$ip,sum)),
                       disk_c = as.numeric(tapply(disk_model$number,disk_model$ip,sum)),
@@ -256,11 +263,37 @@ disk_ip <- data.frame(ip = levels(disk_model$ip),
                       disk_model_c1 = as.numeric(tapply(disk_model$number,disk_model$ip,length)))
 disk_ip <- disk_ip[!is.na(disk_ip$total),]
 row.names(disk_ip) <- NULL
-disk_ip <- merge(disk_ip,cmdb,by = 'ip')
-# load failure list
-load('D:/Data/0427_xiaosong/flist(0401-1231).Rda')
-data.flist <- data.flist[data.flist$class>6,c('ip','f_time','class','fcount')]
+
+
+# 3. 导入故障数据并存储
+load(file.path(dir_data,'flist.Rda'))
+save(disk_ip,data.flist,cmdb,file = file.path(dir_data,'disk_number_label.Rda'))
+# 3. load failure list from uwork and flist (老版本,只把第一次故障作为故障,过滤后面所有故障)
+# load('D:/Data/Disk Number/flist(uwork[2012-2014]).Rda')
+# data.flist_uwork <- data.flist
+# data.flist_uwork <- data.flist_uwork[data.flist_uwork$class>6,c('ip','svr_id','f_time','class','fcount')]
+# load('D:/Data/Disk Number/flist(helper[2008-2013]).Rda')
+# data.flist_helper <- data.flist
+# data.flist_helper <- data.flist_helper[data.flist_helper$class>6,c('ip','svr_id','f_time','class','fcount')]
+# data.flist_helper$f_time <- as.POSIXct(data.flist_helper$f_time,tz = 'UTC')
+# data.flist <- rbind(data.flist_helper,data.flist_uwork)
+# data.flist$ip <- factor(data.flist$ip)
+# data.flist$svr_id <- factor(data.flist$svr_id)
+# # recalculate fcount
+# data.flist <- data.flist[with(data.flist,order(f_time,ip)),]
+# fcount <- tapply(data.flist$fcount,factor(data.flist$ip),function(x) {
+#   if(length(x)>1) return(sum(x))
+#   else return(-1)
+#   })
+# fcount <- fcount[as.numeric(fcount) != -1]
+# # duplication: ip
+# data.flist <- data.flist[!duplicated(data.flist$ip),]  #preserve one failure
+# data.flist$fcount[match(names(fcount),data.flist$ip)] <- fcount
+# data.flist <- data.flist[!duplicated(data.flist$svr_id),]   #preserve one svr_id
+# rownames(data.flist) <- NULL
+################################################################################################
 # merge failure list and disk_ip
+disk_ip <- merge(disk_ip,cmdb,by = 'ip')
 disk_ip <- merge(disk_ip,data.flist,by = 'ip',all.x=T)
 # fix some na and add a bi-class
 disk_ip$f_time[is.na(disk_ip$f_time)] <- as.POSIXct('1970-01-01',tz = 'UTC')
@@ -311,6 +344,7 @@ entropy_info <- data.frame()
 for (i in 1:nrow(condi_entropy_limit)) {
   len.bool_col <- sum(bool[i,])
   tmp <- condi_entropy_limit[i,bool[i,]]
+  if (length(tmp)<=1) next
   entropy_info <- rbind(entropy_info,data.frame(as.character(rep(row.names(tmp),len.bool_col)),
                                                as.character(names(tmp)),as.numeric(tmp)))
 }
@@ -322,9 +356,7 @@ entropy_info_need <- subset(entropy_info,A %in% c('total','disk_c','disc_c','dis
                             & B %in% c('dev_class_id','raid','type_name'))
 
 
-
-
 save(disk_ip,condi_entropy,condi_entropy_list,
      condi_entropy_limit,entropy_info,entropy_info_need,
-     cmdb,data.bad,data.flist,diskBModel,disk_model,model_info,
+     cmdb,data.flist,diskBModel,disk_model,model_info,
      file = file.path(dir_data,'disk_ip.Rda'))
