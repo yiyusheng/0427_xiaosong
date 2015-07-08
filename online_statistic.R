@@ -25,7 +25,7 @@ data.offline <- subset(data.offline,!(svr_asset_id %in% dup.svr_id))
 data.plot <- rbind(cmdb[,col_need],data.offline[,col_need])
 
 # 4. ×÷Í¼
-data.plot$use_time_month <- 
+# data.plot$use_time_month <- 
 num.online <- tapply(data.plot$state,data.plot$use_time,function(x)sum(x == 'online'))
 num.offline <- tapply(data.plot$state,data.plot$use_time,function(x)sum(x == 'offline'))
 data.plot1 <- data.frame(use_time = as.POSIXct(names(num.online),tz = 'UTC'),
@@ -43,6 +43,9 @@ ggplot(data.plot,aes(x = as.Date(use_time),fill = state)) + geom_bar() +
   scale_x_date(
     labels = date_format("%Y-%m"),
     breaks = "1 month")
+
+ggplot(data.plot1,aes(x = use_time, y = online)) + geom_line(color = 'red') +
+  geom_line(data = data.plot1,aes(x = use_time, y = offline),color = 'blue')
 
 ggplot(data.plot1,aes(x = use_time, y = online)) + geom_line(color = 'red') +
   geom_line(data = data.plot1,aes(x = use_time, y = offline),color = 'blue')

@@ -251,6 +251,9 @@ disk_model$Discs <- disk_model$Discs*disk_model$number
 disk_model$Heads <- disk_model$Heads*disk_model$number
 
 # 2. 为有disk model的ip建立的表
+disk_model$interface <- as.character(disk_model$interface)
+disk_model$interface[disk_model$interface == 'SATA 3Gb/s'] <- 'SATA2'
+disk_model$interface[disk_model$interface == 'SATA 6Gb/s'] <- 'SATA3'
 disk_ip <- data.frame(ip = levels(disk_model$ip),
                       total = as.numeric(tapply(disk_model$total,disk_model$ip,sum)),
                       disk_c = as.numeric(tapply(disk_model$number,disk_model$ip,sum)),
@@ -258,9 +261,11 @@ disk_ip <- data.frame(ip = levels(disk_model$ip),
                       head_c = as.numeric(tapply(disk_model$Heads,disk_model$ip,sum)),
                       disk_model = factor(tapply(as.character(disk_model$model),disk_model$ip,
                                           function(x)paste(x,collapse='_'))),
+                      disk_inter = factor(tapply(as.character(disk_model$interface),disk_model$ip,
+                                                 function(x)paste(x,collapse='_'))),
                       disk_model_c = factor(tapply(disk_model$number,disk_model$ip,
                                             function(x)paste(x,collapse='_'))),
-                      disk_model_c1 = as.numeric(tapply(disk_model$number,disk_model$ip,length)))
+                      disk_model_c1 = as.numeric(tapply(disk_model$number,disk_model$ip,length)))      
 disk_ip <- disk_ip[!is.na(disk_ip$total),]
 row.names(disk_ip) <- NULL
 
@@ -292,71 +297,71 @@ save(disk_ip,data.flist,cmdb,file = file.path(dir_data,'disk_number_label.Rda'))
 # data.flist <- data.flist[!duplicated(data.flist$svr_id),]   #preserve one svr_id
 # rownames(data.flist) <- NULL
 ################################################################################################
-# merge failure list and disk_ip
-disk_ip <- merge(disk_ip,cmdb,by = 'ip')
-disk_ip <- merge(disk_ip,data.flist,by = 'ip',all.x=T)
-# fix some na and add a bi-class
-disk_ip$f_time[is.na(disk_ip$f_time)] <- as.POSIXct('1970-01-01',tz = 'UTC')
-disk_ip$class[is.na(disk_ip$class)] <- 0
-disk_ip$fcount[is.na(disk_ip$fcount)] <- 0
-disk_ip$biclass <- 0
-disk_ip$biclass[disk_ip$class>0] <- 1
-res_col <- c('total','disk_c','disc_c','head_c','disk_model','disk_model_c','disk_model_c1',
-             'dev_class_id','dev_class_name','type_name','model_name',
-             'cpu','memory','os_kernal','dept_id','bs1',
-             'idc_parent_name','idc_name','pos_name',
-             'status_name','raid','os_version','svr_version',
-             'class','fcount','biclass',
-             'ip','use_time','f_time','bs2','bs3','rack_name')
-disk_ip <- disk_ip[,res_col]
-
-# conditional entropy
-condi_entropy <- data.frame(matrix(0,nrow = (ncol(disk_ip)-6),ncol = (ncol(disk_ip)-6)))
-names(condi_entropy) <- res_col[1:(length(res_col)-6)]
-row.names(condi_entropy) <- res_col[1:(length(res_col)-6)]
-condi_entropy_limit <- condi_entropy
-condi_entropy_list <- list()
-
-for (i in 1:nrow(condi_entropy)){
-  for (j in 1:ncol(condi_entropy)){
-    tmp <- entropy(disk_ip[,i],disk_ip[,j])
-    condi_entropy[i,j] <- tmp[[1]]
-    condi_entropy_list[[(i-1)*ncol(condi_entropy)+j]] <- tmp[[2]]
-  }
-}
-# entropy divide by max entropy log2(n)
-# entropy_order <- data.frame(matrix(nrow = nrow(condi_entropy),ncol = 10))
-# row.names(entropy_order) <- names(condi_entropy)
-for (j in 1:ncol(condi_entropy)){
-  col_name <- names(condi_entropy_limit)[j]
-  condi_entropy_limit[,col_name] <- condi_entropy[,col_name]/log2(length(unique(disk_ip[,col_name])))
-#   tmp <- condi_entropy_limit[order(condi_entropy_limit[,j]),]
-#   tmp <- data.frame(name = row.names(tmp),value = tmp[,j])
-#   tmp <- tmp[tmp$name!=col_name,]
-#   entropy_order[j,1:5] <- as.character(tmp$name[1:5])
-#   entropy_order[j,6:10] <- as.character(tmp$value[1:5])
-}
-# entropy_order <- entropy_order[order(entropy_order$X6),]
-#找出entropy小于0.1的A,B对
-bool <- condi_entropy_limit <= 0.1
-len.bool <- sum(bool)
-entropy_info <- data.frame()
-for (i in 1:nrow(condi_entropy_limit)) {
-  len.bool_col <- sum(bool[i,])
-  tmp <- condi_entropy_limit[i,bool[i,]]
-  if (length(tmp)<=1) next
-  entropy_info <- rbind(entropy_info,data.frame(as.character(rep(row.names(tmp),len.bool_col)),
-                                               as.character(names(tmp)),as.numeric(tmp)))
-}
-names(entropy_info) <- c('A','B','entropy')
-entropy_info <- entropy_info[entropy_info$A != entropy_info$B,]
-entropy_info <- entropy_info[with(entropy_info,order(B,entropy)),]
-row.names(entropy_info) <- NULL
-entropy_info_need <- subset(entropy_info,A %in% c('total','disk_c','disc_c','disk_model_c','head_c','f_count','class') 
-                            & B %in% c('dev_class_id','raid','type_name'))
-
-
-save(disk_ip,condi_entropy,condi_entropy_list,
-     condi_entropy_limit,entropy_info,entropy_info_need,
-     cmdb,data.flist,diskBModel,disk_model,model_info,
-     file = file.path(dir_data,'disk_ip.Rda'))
+# # merge failure list and disk_ip
+# disk_ip <- merge(disk_ip,cmdb,by = 'ip')
+# disk_ip <- merge(disk_ip,data.flist,by = 'ip',all.x=T)
+# # fix some na and add a bi-class
+# disk_ip$f_time[is.na(disk_ip$f_time)] <- as.POSIXct('1970-01-01',tz = 'UTC')
+# disk_ip$class[is.na(disk_ip$class)] <- 0
+# disk_ip$fcount[is.na(disk_ip$fcount)] <- 0
+# disk_ip$biclass <- 0
+# disk_ip$biclass[disk_ip$class>0] <- 1
+# res_col <- c('total','disk_c','disc_c','head_c','disk_model','disk_model_c','disk_model_c1',
+#              'dev_class_id','dev_class_name','type_name','model_name',
+#              'cpu','memory','os_kernal','dept_id','bs1',
+#              'idc_parent_name','idc_name','pos_name',
+#              'status_name','raid','os_version','svr_version',
+#              'class','fcount','biclass',
+#              'ip','use_time','f_time','bs2','bs3','rack_name')
+# disk_ip <- disk_ip[,res_col]
+# 
+# # conditional entropy
+# condi_entropy <- data.frame(matrix(0,nrow = (ncol(disk_ip)-6),ncol = (ncol(disk_ip)-6)))
+# names(condi_entropy) <- res_col[1:(length(res_col)-6)]
+# row.names(condi_entropy) <- res_col[1:(length(res_col)-6)]
+# condi_entropy_limit <- condi_entropy
+# condi_entropy_list <- list()
+# 
+# for (i in 1:nrow(condi_entropy)){
+#   for (j in 1:ncol(condi_entropy)){
+#     tmp <- entropy(disk_ip[,i],disk_ip[,j])
+#     condi_entropy[i,j] <- tmp[[1]]
+#     condi_entropy_list[[(i-1)*ncol(condi_entropy)+j]] <- tmp[[2]]
+#   }
+# }
+# # entropy divide by max entropy log2(n)
+# # entropy_order <- data.frame(matrix(nrow = nrow(condi_entropy),ncol = 10))
+# # row.names(entropy_order) <- names(condi_entropy)
+# for (j in 1:ncol(condi_entropy)){
+#   col_name <- names(condi_entropy_limit)[j]
+#   condi_entropy_limit[,col_name] <- condi_entropy[,col_name]/log2(length(unique(disk_ip[,col_name])))
+# #   tmp <- condi_entropy_limit[order(condi_entropy_limit[,j]),]
+# #   tmp <- data.frame(name = row.names(tmp),value = tmp[,j])
+# #   tmp <- tmp[tmp$name!=col_name,]
+# #   entropy_order[j,1:5] <- as.character(tmp$name[1:5])
+# #   entropy_order[j,6:10] <- as.character(tmp$value[1:5])
+# }
+# # entropy_order <- entropy_order[order(entropy_order$X6),]
+# #找出entropy小于0.1的A,B对
+# bool <- condi_entropy_limit <= 0.1
+# len.bool <- sum(bool)
+# entropy_info <- data.frame()
+# for (i in 1:nrow(condi_entropy_limit)) {
+#   len.bool_col <- sum(bool[i,])
+#   tmp <- condi_entropy_limit[i,bool[i,]]
+#   if (length(tmp)<=1) next
+#   entropy_info <- rbind(entropy_info,data.frame(as.character(rep(row.names(tmp),len.bool_col)),
+#                                                as.character(names(tmp)),as.numeric(tmp)))
+# }
+# names(entropy_info) <- c('A','B','entropy')
+# entropy_info <- entropy_info[entropy_info$A != entropy_info$B,]
+# entropy_info <- entropy_info[with(entropy_info,order(B,entropy)),]
+# row.names(entropy_info) <- NULL
+# entropy_info_need <- subset(entropy_info,A %in% c('total','disk_c','disc_c','disk_model_c','head_c','f_count','class') 
+#                             & B %in% c('dev_class_id','raid','type_name'))
+# 
+# 
+# save(disk_ip,condi_entropy,condi_entropy_list,
+#      condi_entropy_limit,entropy_info,entropy_info_need,
+#      cmdb,data.flist,diskBModel,disk_model,model_info,
+#      file = file.path(dir_data,'disk_ip.Rda'))
