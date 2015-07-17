@@ -13,10 +13,12 @@ mcf_age <- function(data.mcf,time_interval){
   # 1. 时间与故障机器数
   mcf <- data.frame(time = as.numeric(names(table.ol_time_fail)),
                     fails = as.numeric(table.ol_time_fail))
-  # 2. 在线机器数
+  # 2. 在线机器数(因为故障机器是有重复的,要把这部分重复去掉)
+  tmp <- subset(data.mcf,dup == T)
   mcf$atrisk <- sapply(mcf$time,function(x){
-    #   nrow(subset(data.mcf,start < x & end > x))
-    sum(data.mcf$start < x & data.mcf$end > x)
+    tmp1 <- subset(tmp,start <= x & end > x)
+    sum(tmp1$disk_cNew)
+#     nrow(tmp1)
   })
   # 3. 关于时间的故障率
   mcf$errorrate_pertime <- mcf$fails/mcf$atrisk
@@ -116,18 +118,19 @@ mcf_merge <- function(mcf_item_age,item,item_need,
                       config_item,ti,class_suffix,title){
   for (i in 1:length(item_need)) {
     eval(parse(text = sprintf('config_item_sub <- subset(config_item,%s == item_need[i])',item)))
-    if (nrow(subset(config_item_sub,ol_time_fail!= -1)) <= 20) next
+    if (nrow(subset(config_item_sub,ol_time_fail!= -1)) < 10) next
     tmp <- mcf_age(subset(config_item_sub),ti)
+    tmp1 <- subset(config_item_sub,dup == T)
     tmp$class <- paste(item_need[i],class_suffix,sep='')
     tmp$classNew <- paste(item_need[i],class_suffix,
-                          '[',length(unique(config_item_sub$ip)),'/',
+                          '[',sum(tmp1$disk_cNew),'/',
                           nrow(subset(config_item_sub,ol_time_fail!= -1)),']',sep='')
     mcf_item_age <- rbind(mcf_item_age,tmp)
     # fails and atrisk plot
-    png(file = file.path(dir_data,'output','mcf','fail_atrisk',paste(title,item_need[i],'fa.png',sep = '_')),width = 1200,height = 900,units = 'px')
-    g_plot <- line_plot_2yaxis(subset(tmp,,c('time','fails','atrisk')))
-    grid.draw(g_plot)
-    dev.off()
+#     png(file = file.path(dir_data,'output','mcf','fail_atrisk',paste(title,item_need[i],'fa.png',sep = '_')),width = 1200,height = 900,units = 'px')
+#     g_plot <- line_plot_2yaxis(subset(tmp,,c('time','fails','atrisk')))
+#     grid.draw(g_plot)
+#     dev.off()
   }
   return(mcf_item_age)
 }

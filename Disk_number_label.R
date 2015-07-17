@@ -2,23 +2,23 @@
 rm(list = ls())
 dir_data <- 'D:/Data/Disk Number'
 # #@@@ 计算A列中每种类型中B占比的熵,再以A中各类的占比作为权值计算平均熵,即B关于A的条件熵
-entropy <- function(A,B) {
-  A <- factor(A)
-  B <- factor(B)
-  t1 <- table(A)
-  t2 <- table(B)
-  t1 <- data.frame(name = names(t1),perc = as.numeric(t1)/sum(t1))
-  t2 <- data.frame(name = names(t2),perc = as.numeric(t2)/sum(t2))
-  t1$entro <- 0
-  tmp <- tapply(B,A,function(x){
-    s <- length(x)
-    per <- as.numeric(table(x))/s
-    per <- per[per!=0]
-    return(-1*sum(per*log2(per)))         #entropy of each class of A
-  })
-  entro_A <- sum(t1$perc*as.numeric(tmp))      #conditional entropy
-  return(list(entro = entro_A,entro_each = tmp))
-}
+# entropy <- function(A,B) {
+#   A <- factor(A)
+#   B <- factor(B)
+#   t1 <- table(A)
+#   t2 <- table(B)
+#   t1 <- data.frame(name = names(t1),perc = as.numeric(t1)/sum(t1))
+#   t2 <- data.frame(name = names(t2),perc = as.numeric(t2)/sum(t2))
+#   t1$entro <- 0
+#   tmp <- tapply(B,A,function(x){
+#     s <- length(x)
+#     per <- as.numeric(table(x))/s
+#     per <- per[per!=0]
+#     return(-1*sum(per*log2(per)))         #entropy of each class of A
+#   })
+#   entro_A <- sum(t1$perc*as.numeric(tmp))      #conditional entropy
+#   return(list(entro = entro_A,entro_each = tmp))
+# }
 ###################################################################################
 # 1. read cmdb and generate disk information
 # cmdb <- read.csv(file.path(dir_data,'cmdb1104_allattr.csv'))
@@ -53,7 +53,7 @@ entropy <- function(A,B) {
 # diskBModel$Model_clear <- factor(diskBModel$Model_clear)
 # 
 # # 5. output disk model to search capacity of them
-# diskBModel$ipm <- paste(diskBModel$ip,diskBModel$Model_clear,sep='_')
+# diskBModel$ipm <- paste(diskBModel$ip,diskBModel$model,sep='_')
 # table.ipm <- table(diskBModel$ipm)
 # disk_model <- strsplit(as.character(names(table.ipm)),'_')
 # disk_model <- data.frame(t(sapply(disk_model,c)))
@@ -240,10 +240,10 @@ entropy <- function(A,B) {
 #@@@ 给CMDB数据添加DISK MODEL信息
 # 1. 给disk model添加容量,数量等信息
 load(file.path(dir_data,'disk_cmdb.Rda'))
-# model_info <- read.csv(file.path(dir_data,'num_model.csv'))
-# model_info <- model_info[!duplicated(model_info$Model_clear),]
+model_info <- read.csv(file.path(dir_data,'num_model.csv'))
+model_info <- model_info[!duplicated(model_info$Model_clear),]
 disk_model <- subset(disk_model,model!='NOMODEL')
-# disk_model <- merge(disk_model,model_info,by.x = 'model',by.y = 'Model_clear',all.x = T)
+disk_model <- merge(disk_model,model_info,by.x = 'model',by.y = 'Model_clear',all.x = T)
 disk_model$total <- disk_model$capacity*disk_model$number
 disk_model$Count <- NULL
 disk_model$Model_ori <- NULL
@@ -261,6 +261,8 @@ disk_ip <- data.frame(ip = levels(disk_model$ip),
                       head_c = as.numeric(tapply(disk_model$Heads,disk_model$ip,sum)),
                       disk_model = factor(tapply(as.character(disk_model$model),disk_model$ip,
                                           function(x)paste(x,collapse='_'))),
+                      disk_cache = factor(tapply(as.character(disk_model$Cache.MB.), disk_model$ip,
+                                                 function(x)paste(x,collapse='_'))),
                       disk_inter = factor(tapply(as.character(disk_model$interface),disk_model$ip,
                                                  function(x)paste(x,collapse='_'))),
                       disk_model_c = factor(tapply(disk_model$number,disk_model$ip,
