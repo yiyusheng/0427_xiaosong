@@ -307,7 +307,7 @@ require('reshape2')
 pm10 <- read.csv(file.path(dir_data,'air','pm10.csv'))
 item_need <- c('深圳','上海','天津','广州','成都','西安')
 # pm10$Mean <- pm10$Mean_3year
-pm10 <- within(pm10,city <- factor(city,levels = city[order(Mean)]))
+pm10 <- within(pm10,city <- factor(city,levels = city[order(Mean_3year)]))
 p_Q12 <- ggplot(subset(pm10,city %in% item_need),aes(x = city, y = Mean)) + 
   geom_bar(stat = 'identity') + 
   ylab('Mean_API')

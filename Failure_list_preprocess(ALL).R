@@ -2,17 +2,19 @@
 rm(list = ls())
 dir_data <- 'D:/Data/Disk Number/'
 
-# 1. 读取uwork数据
+# 1. 读取uwork数据,因为helper中是有use_time的,所以把uwork也加一个use_time
 load('D:/Data/Disk Number/flist(uwork[2012-2014]).Rda')
 data.flist_uwork <- data.flist
 data.flist_uwork <- data.flist_uwork[data.flist_uwork$class>6,c('ip','svr_id','f_time','class')]
 data.flist_uwork$use_time <- as.POSIXct('2013-12-01',tz = 'UTC')
+data.flist_uwork$from <- 'uwork'
 # 2. 读取helper数据
 load('D:/Data/Disk Number/flist(helper[2008-2013]).Rda')
 data.flist_helper <- data.flist
 data.flist_helper <- data.flist_helper[data.flist_helper$class>6,c('ip','svr_id','f_time','class','use_time')]
 data.flist_helper$f_time <- as.POSIXct(data.flist_helper$f_time,tz = 'UTC')
 data.flist_helper$use_time <- as.POSIXct(data.flist_helper$use_time,tz = 'UTC')
+data.flist_helper$from <- 'helper'
 data.flist <- rbind(data.flist_helper,data.flist_uwork)
 # 3. 合并数据
 data.flist$ip <- factor(data.flist$ip)

@@ -1,5 +1,5 @@
 # MCF function
-
+require(scales)
 ##########################################
 #@@@ 函数
 # 1. MCF算法(AGE).
@@ -8,7 +8,8 @@ mcf_age <- function(data.mcf,time_interval){
   data.mcf$ol_time_fail <- round(data.mcf$ol_time_fail/time_interval)
   data.mcf$start <- round(data.mcf$start/time_interval)
   data.mcf$end <- round(data.mcf$end/time_interval)
-  table.ol_time_fail <- table(data.mcf$ol_time_fail)[-c(1,2)]
+  table.ol_time_fail <- table(data.mcf$ol_time_fail)
+  table.ol_time_fail <- table.ol_time_fail[2:length(table.ol_time_fail)]
   tmp <- names(table.ol_time_fail)
   # 1. 时间与故障机器数
   mcf <- data.frame(time = as.numeric(names(table.ol_time_fail)),
@@ -16,7 +17,7 @@ mcf_age <- function(data.mcf,time_interval){
   # 2. 在线机器数(因为故障机器是有重复的,要把这部分重复去掉)
   tmp <- subset(data.mcf,dup == T)
   mcf$atrisk <- sapply(mcf$time,function(x){
-    tmp1 <- subset(tmp,start <= x & end > x)
+    tmp1 <- subset(tmp,start < x & end >= x)
     sum(tmp1$disk_cNew)
 #     nrow(tmp1)
   })
@@ -64,7 +65,7 @@ mcf_cal <- function(data.mcf,time_interval) {
 }
 
 # 3. 作图并保存.加入相对比例计算
-mcf_plot <- function(mcf,time_limit,prefix,frac_m) {
+mcf_plot <- function(mcf,time_limit,prefix,frac_m,title) {
   line_size = 2
   # 1. 时间过滤&按比例过滤
   # 时间处理
@@ -74,11 +75,23 @@ mcf_plot <- function(mcf,time_limit,prefix,frac_m) {
   mcf_p <- subset(mcf,time <= time_limit & 
                     atrisk > 50 & 
                     frac_max > frac_m)
-
   # 2. 作图
   # 2.1 MCF
   geo_aes <- aes(x = time,y = mcf,group = classNew, color = classNew)
-  p1 <- ggplot(mcf_p,geo_aes) + geom_line(size = line_size)
+  p1 <- ggplot(mcf_p,geo_aes) + geom_line(size = line_size) + 
+    xlab('Time(month)') + ylab('MCF') + 
+    ggtitle(title) + 
+    scale_color_discrete(name = 'Class') +
+    guides(colour = guide_legend(override.aes = list(alpha = 1))) +
+    theme(axis.text = element_text(size = 18),
+          axis.title = element_text(size = 20),
+          legend.text = element_text(size = 18),
+          legend.title = element_text(size = 20),
+          plot.title = element_text(size = 26, face = 'bold'),
+          legend.position = c(0,1),
+          legend.justification = c(0,1),
+          legend.background = element_rect(fill = alpha('grey',0.5)))
+  
   # 2.2 error rate
   geo_aes <- aes(x = time,y = errorrate_pertime,group = classNew, color = classNew)
   p2 <- ggplot(mcf_p,geo_aes) + geom_line(size = line_size)
@@ -91,9 +104,22 @@ mcf_plot <- function(mcf,time_limit,prefix,frac_m) {
   # 2.5 recurrence rate
   geo_aes <- aes(x = time,y = rr,group = classNew, color = classNew)
   p5 <- ggplot(subset(mcf_p,rr != 0,time < time_limit),geo_aes) + geom_line(size = line_size)
+  
   # 2.6 stand_mcf
   geo_aes <- aes(x = time,y = stand_mcf,group = classNew, color = classNew)
-  p6 <- ggplot(mcf_p,geo_aes) + geom_line(size = line_size)
+  p6 <- ggplot(mcf_p,geo_aes) + geom_line(size = line_size) + 
+    xlab('Time(month)') + ylab('Stand_MCF') + 
+    ggtitle(title) +
+    scale_color_discrete(name = 'Class') +
+    guides(colour = guide_legend(override.aes = list(alpha = 1))) +
+    theme(axis.text = element_text(size = 18),
+          axis.title = element_text(size = 20),
+          legend.text = element_text(size = 18),
+          legend.title = element_text(size = 20),
+          plot.title = element_text(size = 26, face = 'bold'),
+          legend.position = c(0,1),
+          legend.justification = c(0,1),
+          legend.background = element_rect(fill = alpha('grey',0.5)))
   
   # 3. 保存
   ggsave(file=file.path(dir_data,'output','mcf',paste(prefix,'mcf.png',sep='_')), plot=p1, width = 12, height = 9, dpi = 100)

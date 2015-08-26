@@ -54,7 +54,7 @@ dev_info <- subset(dev_config,
 
 # 1.2.1. 给确定机型添加硬盘数
 cmdb_dev <- subset(cmdb,dev_class_id %in% dev_need)
-cmdb_dev <- cmdb
+# cmdb_dev <- cmdb
 cmdb_dev$disk_cNew <- dev_info$disk_c[match(cmdb_dev$dev_class_id,dev_info$dev_class_id)]
 cmdb_dev$totalNew <- dev_info$total[match(cmdb_dev$dev_class_id,dev_info$dev_class_id)]
 cmdb_dev$itfNew <- as.character(dev_info$interface[match(cmdb_dev$dev_class_id,dev_info$dev_class_id)])
@@ -86,7 +86,10 @@ cmdb_dev$totalNew[cmdb_dev$dev_class_id == 'C1' &
                     (cmdb_dev$svr_version == '3.0.1' | cmdb_dev$svr_version == '4.2.0')] <- 1000
 cmdb_dev$totalNew[cmdb_dev$dev_class_id == 'C1' & 
                     cmdb_dev$svr_version == '2.0.0'] <- 250
-                  
+
+cmdb_dev$cacheNew[cmdb_dev$itfNew == 'SATA2'] <- '32MB'
+cmdb_dev$cacheNew[cmdb_dev$itfNew == 'SATA3'] <- '64MB'
+cmdb_dev$cacheNew[cmdb_dev$dev_class_id == 'TS6'] <- '64MB'
 # 1.3. 结合disk_ip,cmdb_dev,data.mcf生成包含MCDINR六个维度数据的表
 data.mcf$ol_time <- data.mcf$end - data.mcf$start
 data.config <- merge(data.mcf[,c('ip','start','f_time','end','ol_time','ol_time_fail')],
@@ -124,16 +127,16 @@ data.config$dup <- !duplicated(data.config$ip)
 # 1.5. 生成MCF of all servers
 # load(file.path(dir_data,'mcf_dataConfig.Rda'))
 mcf_all_age <- mcf_age(data.config,ti)
-mcf_all_age$class <- 'baseline'
+mcf_all_age$class <- 'Baseline'
 tmp1 <- subset(data.config,dup == T)
-mcf_all_age$classNew <- paste('baseline[',sum(tmp1$disk_cNew),
+mcf_all_age$classNew <- paste('Baseline[',sum(tmp1$disk_cNew),
                               '/',nrow(subset(data.config,ol_time_fail!= -1)),']',sep='')
 # png(file = file.path(dir_data,'output','mcf','fail_atrisk',paste('Baseline','fails_atrisk.png',sep = '_')),width = 1200,height = 900,units = 'px')
 # g_plot <- line_plot_2yaxis(subset(mcf_all_age,,c('time','fails','atrisk')))
 # grid.draw(g_plot)
 # dev.off()
-mcf_all_age <- mcf_sc(mcf_all_age,'baseline')
-pset1 <- mcf_plot(mcf_all_age,time_need,'all_age',frac_max)
+mcf_all_age <- mcf_sc(mcf_all_age,'Baseline')
+pset1 <- mcf_plot(mcf_all_age,time_need,'all_age',frac_max,'Baseline')
 save(mcf_all_age,data.config,dev_info,cmdb_dev,file = file.path(dir_data,'mcf_all_age.Rda'))
 
 # 1.5 用rr把数据分为三段.

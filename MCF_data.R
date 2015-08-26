@@ -2,7 +2,7 @@
 rm(list = ls())
 dir_data <- 'D:/Data/Disk Number'
 load(file.path(dir_data,'disk_number_label.Rda'))
-end_time <- as.POSIXct('2013-12-01',tz = 'UTC')
+end_time <- as.POSIXct('2015-01-01',tz = 'UTC')
 require(ggplot2)
 #####################################################
 #@@@ data.flist过滤
@@ -19,17 +19,18 @@ tmp4 <- names(tmp2)[tmp2!=1]
 data.flist <- subset(data.flist,!(ip %in% tmp3) & !(svr_id %in% tmp4))
 data.flist$ip_svr <- NULL
 
-# 3. [删除1949]无数据flist,补全use_time in data.flist by cmdb (helper的use_time已经带过来了,uwork没有use_time)
+# 3. [删除1949]flist补全,删除无法补全use_time的故障单
+# 补全use_time in data.flist by cmdb (helper的use_time已经带过来了,uwork没有use_time)
 data.flist <- merge(data.flist,cmdb[,c('ip','use_time')],by = 'ip', all.x = T)
-data.flist <- subset(data.flist, !is.na(use_time.y) | use_time.x != end_time)
+data.flist <- subset(data.flist, !is.na(use_time.y))
 
-# 4. 标记在2013-12-01之前下架的机器
+# 4. 标记在2013-12-01之前下架的机器,已经不管下不下架的问题了.
 data.flist$is_online <- 1
-data.flist$is_online[data.flist$class > 7 & is.na(data.flist$use_time.y)] <- 0
+# data.flist$is_online[data.flist$class > 7 & is.na(data.flist$use_time.y)] <- 0
 
 # 5. [删除186]helper故障单中use_time与cmdb中对应的use_time不一致的ip
-tmp <- subset(data.flist,use_time.x != end_time & !is.na(use_time.y))
-tmp1 <- tmp[tmp$use_time.x != tmp$use_time.y,]
+tmp <- subset(data.flist,from == 'helper' & use_time.x != use_time.y)
+tmp1 <- tmp
 data.flist <- subset(data.flist, !(ip %in% tmp1$ip))
 data.flist$use_time.y[is.na(data.flist$use_time.y)] <- data.flist$use_time.x[is.na(data.flist$use_time.y)]
 data.flist$use_time <- data.flist$use_time.y
@@ -94,7 +95,7 @@ units(data.flist$ol_time_fail) <- 'days'
 
 # 2. 给flist添加开始处理时间和结束时间.
 first_failure_time <- as.POSIXct('2009-01-01',tz = 'UTC')
-last_failure_time <- as.POSIXct('2013-12-01',tz = 'UTC')
+last_failure_time <- end_time
 data.flist$start <- difftime(first_failure_time,first_failure_time,units = 'days')
 idx.young <- data.flist$use_time < first_failure_time
 data.flist$start[idx.young] <- difftime(first_failure_time,data.flist$use_time[idx.young],units = 'days')
@@ -102,7 +103,7 @@ data.flist$end <- difftime(last_failure_time,data.flist$use_time,units = 'days')
 
 # 3. 给flist添加calendar的开始处理时间和结束时间.
 first_failure_time_c <- as.POSIXct('2003-01-01',tz = 'UTC')
-last_failure_time_c <- as.POSIXct('2013-12-01',tz = 'UTC')
+last_failure_time_c <- end_time
 data.flist$start_c <- difftime(data.flist$use_time,first_failure_time_c,units = 'days')
 data.flist$end_c <- difftime(last_failure_time_c,first_failure_time_c,units = 'days')
 data.flist$ol_time_fail_c <- difftime(data.flist$f_time,first_failure_time_c,units = 'days')
@@ -171,7 +172,7 @@ data.mcf$end <- round(as.numeric(data.mcf$end))
 data.mcf$ol_time_fail_c <- round(as.numeric(data.mcf$ol_time_fail_c))
 data.mcf$start_c <- round(as.numeric(data.mcf$start_c))
 data.mcf$end_c <- round(as.numeric(data.mcf$end_c))
-save(data.mcf,file = file.path(dir_data,'data_mcf.Rda'))
+save(data.mcf,file = file.path(dir_data,'data_mcf_rsv2014.Rda'))
 #####################################################
 #@@@ 故障时服役时间统计(AGE)
 tmp <- subset(data.mcf,ol_time_fail >= 0)
