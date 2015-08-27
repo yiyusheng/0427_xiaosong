@@ -26,6 +26,7 @@ d.smart <- subset(d.smart,grepl(reg_ip,ip))
 d.smart <- factorX(d.smart)
 d.smart$min_time <- as.POSIXct(d.smart$min_time,tz = 'UTC')
 d.smart$max_time <- as.POSIXct(d.smart$max_time,tz = 'UTC')
+
 # 2.1 取每个机器的特征
 d.smarts <- data.frame(ip = levels(d.smart$ip),
                        disk_c = as.numeric(tapply(d.smart$sn,d.smart$ip,length)),
@@ -36,16 +37,19 @@ d.smarts <- data.frame(ip = levels(d.smart$ip),
 col_need <- c('svr_asset_id','ip','dev_class_id','bs1','use_time','raid')
 d.smarts <- merge(d.smarts,cmdb[,col_need],by.x = 'ip',by.y = 'ip')
 d.smarts <- factorX(d.smarts)
+
 # 2.2 机型统计
 dev.cmdb <- tableX(cmdb$dev_class_id)
 dev.smarts <- tableX(d.smarts$dev_class_id)
 dev.smarts$cmdb <- dev.cmdb$count[match(dev.smarts$item,dev.cmdb$item)]
 dev.smarts$cmdb_rate <- dev.smarts$count/dev.smarts$cmdb
+
 # 2.3 业务统计
 bs.cmdb <- tableX(cmdb$bs1)
 bs.smarts <- tableX(d.smarts$bs1)
 bs.smarts$cmdb <- bs.cmdb$count[match(bs.smarts$item,bs.cmdb$item)]
 bs.smarts$cmdb_rate <- bs.smarts$count/bs.smarts$cmdb 
+
 # 存储
 save(d.smart,d.smarts,dev.smarts,bs.smarts,file = file.path(dir_data,'sta_smart.Rda'))
 write.xlsx(bs.smarts[,c('item','count','cmdb','cmdb_rate')],
@@ -66,6 +70,7 @@ dev.cmdb <- tableX(cmdb$dev_class_id)
 dev.902 <- tableX(d.902$dev_class_id)
 dev.902$cmdb <- dev.cmdb$count[match(dev.902$item,dev.cmdb$item)]
 dev.902$cmdb_rate <- dev.902$count/dev.902$cmdb
+
 # 3.2 业务统计
 bs.cmdb <- tableX(cmdb$bs1)
 bs.902 <- tableX(d.902$bs1)
@@ -110,16 +115,45 @@ d.902all$bladesvrid[tmp1] <- as.character(blade_flag[,1])
 d.902all$bladepos[tmp1] <- as.character(blade_flag[,2])
 
 # 4.3 dbA,dbB分开处理,C1的2u4n,twins,server各100吧
-# TS类
+# 4.3.1 TS类
 k131_svrid <- character(0)
 for(i in 1:length(dbA)){
   tmp <- subset(d.902all,db == dbA[i])
   idx <- sample(1:nrow(tmp),100)
   k131_svrid <- c(k131_svrid,as.character(tmp$svrid[idx]))
 }
-# C1类
+# 4.3.2 C1类
 d.902C <- subset(d.902all,dev_class_id == 'C1' & bladepos %in% c('1','2','3','4','L','R','0'))
-for (i in 1:length(dbB)){
-  tmp <- subset(d.902C,db == dbB[i] & bladepos == '0')
-  tmp1 <- sample(1:nrow(tmp),100)
-}
+table.svrid <- tableX(d.902C$bladesvrid)
+d.902C$bladecount <- table.svrid$count[match(d.902C$bladesvrid,table.svrid$item)]
+# dbB[1] 2u4n
+tmp <- subset(d.902C,db == dbB[1] & bladepos == '1' & bladecount == 4)
+bsvrid <- tmp$bladesvrid[sample(1:nrow(tmp),25)]
+tmp1 <- subset(d.902C,bladesvrid %in% bsvrid)
+k131_svrid <- c(k131_svrid,as.character(tmp1$svrid))
+# dbB[1] server
+tmp <- subset(d.902C,db == dbB[1] & bladepos == '0')
+bsvrid <- tmp$svrid[sample(1:nrow(tmp),100)]
+k131_svrid <- c(k131_svrid,as.character(bsvrid))
+# dbB[2] 2u4n
+tmp <- subset(d.902C,db == dbB[2] & bladepos == '1' & bladecount == 4)
+bsvrid <- tmp$bladesvrid[sample(1:nrow(tmp),50)]
+tmp1 <- subset(d.902C,bladesvrid %in% bsvrid)
+k131_svrid <- c(k131_svrid,as.character(tmp1$svrid))
+# dbB[3] 2u4n
+tmp <- subset(d.902C,db == dbB[3] & bladepos == '1' & bladecount == 4)
+bsvrid <- tmp$bladesvrid[sample(1:nrow(tmp),25)]
+tmp1 <- subset(d.902C,bladesvrid %in% bsvrid)
+k131_svrid <- c(k131_svrid,as.character(tmp1$svrid))
+#dbB[3] twins
+tmp <- subset(d.902C,db == dbB[3] & bladepos == 'L' & bladecount == 2)
+bsvrid <- tmp$bladesvrid[sample(1:nrow(tmp),50)]
+tmp1 <- subset(d.902C,bladesvrid %in% bsvrid)
+k131_svrid <- c(k131_svrid,as.character(tmp1$svrid))
+#dbB[3] server
+tmp <- subset(d.902C,db == dbB[3] & bladepos == '0')
+bsvrid <- tmp$svrid[sample(1:nrow(tmp),50)]
+k131_svrid <- c(k131_svrid,as.character(bsvrid))
+
+write.csv(data.frame(svrid = k131_svrid),file = file.path(dir_data,'k131_svrid'),
+          row.names = F,col.names=F)
