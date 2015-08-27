@@ -1,6 +1,9 @@
 # IO特征与业务之间的对应关系
 rm(list = ls())
+source('D:/Git/R_Function/Rfun.R')
 require('ggplot2')
+require('scales')
+require('xlsx')
 
 #@@@ PARAMETERS
 dir_dataA <- 'D:/Data/Disk Number'
@@ -14,11 +17,11 @@ dev_need <- c('TS4','TS5','TS6',
               'C1')
 data.config$bs1 <- cmdb_dev$bs1[match(data.config$ip,cmdb_dev$ip)]
 data.config <- subset(data.config,use_time > as.POSIXct('2010-01-01'))
-data.config <- subset(data.config,dev_class_id %in% dev_need)
+# data.config <- subset(data.config,dev_class_id %in% dev_need)
 data.config$dev_class_id <- factor(data.config$dev_class_id)
 
-# 2. IO特征数据
-data <- read.csv(file.path(dir_data,'7kattr902'))
+# # 2. IO特征数据
+data <- read.csv(file.path(dir_data,'k130_902'))
 data$date <- as.POSIXct(data$date)
 data$dev_class_id <- cmdb$dev_class_id[match(data$svrid,cmdb$svr_asset_id)]
 data$bs1 <- cmdb$bs1[match(data$svrid,cmdb$svr_asset_id)]
@@ -50,4 +53,3 @@ for (i in 1:length(dev_need)){
   ggsave(file=file.path(dir_data,'io',paste(t,'.png',sep='')), 
          plot=p, width = 12, height = 9, dpi = 100)
 }
-
