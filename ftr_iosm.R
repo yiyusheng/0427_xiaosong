@@ -13,23 +13,34 @@ dir_data <- 'D:/Data/attrid'
 # 1. cmdb数据
 load(file.path(dir_dataA,'disk_number_label.Rda'))
 load(file.path(dir_dataA,'mcf_all_age_rsv2014.Rda'))
-dev_need <- c('TS4','TS5','TS6',
-              'C1')
 data.config$bs1 <- cmdb_dev$bs1[match(data.config$ip,cmdb_dev$ip)]
 data.config <- subset(data.config,use_time > as.POSIXct('2010-01-01'))
+dev_need <- c('TS3','TS4','TS5','TS6','C1')
 # data.config <- subset(data.config,dev_class_id %in% dev_need)
 data.config$dev_class_id <- factor(data.config$dev_class_id)
 
-# # 2. IO特征数据
-data <- read.csv(file.path(dir_data,'k130_902'))
-data$date <- as.POSIXct(data$date)
-data$dev_class_id <- cmdb$dev_class_id[match(data$svrid,cmdb$svr_asset_id)]
-data$bs1 <- cmdb$bs1[match(data$svrid,cmdb$svr_asset_id)]
-data$db <- paste(data$bs1,data$dev_class_id,sep='_')
-data$dbd <- paste(data$db,data$date,sep='_')
-# data <- data[sort(data$dbd),]
 
-# 3. 作图
+# 2. 样本及IO与SMART统计数据
+k131_svrid <- read.csv(file.path(dir_data,'k131_svrid_old'),header = F)
+names(k131_svrid) <- 'svrid'
+col_need <- c('svr_asset_id','ip','dev_class_id','bs1','type_name','pos_id')
+k131_svrid <- merge(k131_svrid,cmdb[,col_need],by.x = 'svrid',by.y = 'svr_asset_id')
+k131_svrid$db <- paste(k131_svrid$dev_class_id,k131_svrid$bs1,sep='_')
+k131_svrid$dbt <- paste(k131_svrid$db,k131_svrid$type_name,sep='_')
+k131_svrid <- factorX(k131_svrid)
+load(file.path(dir_data,'sta_smart.Rda'))
+load(file.path(dir_data,'sta_io.Rda'))
+
+# 3. IO特征数据
+data <- read.csv(file.path(dir_data,'k131_902'))
+data$date <- as.POSIXct(data$date)
+col_need <- c('svr_asset_id','ip','dev_class_id','bs1','type_name','pos_id')
+data <- merge(data,cmdb[,col_need],by.x = 'svrid',by.y = 'svr_asset_id')
+data$db <- paste(data$dev_class_id,data$bs1,sep='_')
+data$dbt <- paste(data$db,data$type_name,sep='_')
+data <- factorX(data)
+
+# 4. 作图
 table.db <- table(data$db)
 for (i in 1:length(dev_need)){
   d <- dev_need[i]
