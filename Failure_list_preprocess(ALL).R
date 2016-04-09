@@ -6,14 +6,16 @@ dir_data <- 'D:/Data/Disk Number/'
 load('D:/Data/Disk Number/flist(uwork[2012-2014]).Rda')
 data.flist_uwork <- data.flist
 data.flist_uwork$fType <- paste(data.flist_uwork$ftype,'uwork',sep = '_')
-data.flist_uwork <- data.flist_uwork[data.flist_uwork$class>6,c('ip','svr_id','f_time','class','fType')]
+data.flist_uwork <- data.flist_uwork[,c('ip','svr_id','f_time','class','fType')]
+# data.flist_uwork <- data.flist_uwork[data.flist_uwork$class>6,c('ip','svr_id','f_time','class','fType')]
 data.flist_uwork$use_time <- as.POSIXct('2013-12-01',tz = 'UTC')
 data.flist_uwork$from <- 'uwork'
 # 2. ¶ÁÈ¡helperÊý¾Ý
 load('D:/Data/Disk Number/flist(helper[2008-2013]).Rda')
 data.flist_helper <- data.flist
 data.flist_helper$fType <- paste(data.flist_helper$type,'helper',sep = '_')
-data.flist_helper <- data.flist_helper[data.flist_helper$class>6,c('ip','svr_id','f_time','class','use_time','fType')]
+data.flist_helper <- data.flist_helper[,c('ip','svr_id','f_time','class','use_time','fType')]
+# data.flist_helper <- data.flist_helper[data.flist_helper$class>6,c('ip','svr_id','f_time','class','use_time','fType')]
 data.flist_helper$f_time <- as.POSIXct(data.flist_helper$f_time,tz = 'UTC')
 data.flist_helper$use_time <- as.POSIXct(data.flist_helper$use_time,tz = 'UTC')
 data.flist_helper$from <- 'helper'
