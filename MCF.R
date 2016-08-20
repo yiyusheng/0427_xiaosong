@@ -1,4 +1,4 @@
-#@@@ MCFËã·¨ÊµÏÖÓëÊı¾İ¼ÆËã
+#@@@ MCFç®—æ³•å®ç°ä¸æ•°æ®è®¡ç®—
 rm(list = ls())
 require(ggplot2)
 source('MCF_function.R')
@@ -8,11 +8,11 @@ source('plot_2yaxis.R')
 dir_data <- 'D:/Data/Disk Number'
 load(file.path(dir_data,'data_mcf.Rda'))
 load(file.path(dir_data,'disk_number_label.Rda'))
-# ¶ÁÈënomodelÊı¾İ²¢Óëdisk_ip merge. nomodelµÄÊı¾İÒ²ÊÇdiskÏà¹ØÊı¾İ,ÊÇÎÒÃÇÍ¨¹ı¹æÔòÍÆ²â³öÀ´µÄ
+# è¯»å…¥nomodelæ•°æ®å¹¶ä¸disk_ip merge. nomodelçš„æ•°æ®ä¹Ÿæ˜¯diskç›¸å…³æ•°æ®,æ˜¯æˆ‘ä»¬é€šè¿‡è§„åˆ™æ¨æµ‹å‡ºæ¥çš„
 load(file.path(dir_data,'cmdb_nomodel_add.Rda'))
-# ¹ıÂË2010-01-01Ç°ÉÏ¼ÜµÄ»úÆ÷,ÒòÎª´ËÇ°ÉÏÃæµÄ»úÆ÷ÏÂ¼ÜÊıÁ¿ºÜ¶à
+# è¿‡æ»¤2010-01-01å‰ä¸Šæ¶çš„æœºå™¨,å› ä¸ºæ­¤å‰ä¸Šé¢çš„æœºå™¨ä¸‹æ¶æ•°é‡å¾ˆå¤š
 # cmdb <- subset(cmdb,use_time > as.POSIXct('2010-01-01'))
-# ¶ÁÈë²»Í¬disk modelµÄĞÅÏ¢
+# è¯»å…¥ä¸åŒdisk modelçš„ä¿¡æ¯
 model_info <- read.csv(file.path(dir_data,'num_model.csv'))
 model_info_clear <- model_info[!duplicated(model_info$Model_clear),]
 model_info_clear <- model_info_clear[order(model_info_clear$capacity),]
@@ -23,7 +23,7 @@ time_need <- 4*round(365/ti)
 frac_max <- 0.1
 
 #@@@ MAIN part
-# 0. ´¦Àíno modelÊı¾İ²¢Óëdisk_ipºÏ²¢Éú³Édisk_ip_cn
+# 0. å¤„ç†no modelæ•°æ®å¹¶ä¸disk_ipåˆå¹¶ç”Ÿæˆdisk_ip_cn
 # cmdb_nomodel <- subset(cmdb_nomodel, ip != '')
 # cmdb_nomodel$disc_c <- cmdb_nomodel$disk_c*2
 # cmdb_nomodel$head_c <- cmdb_nomodel$disc_c*2
@@ -33,14 +33,14 @@ frac_max <- 0.1
 # cmdb_nomodel$disk_inter <- 'NOINTER'
 # disk_ip_cn <- rbind(disk_ip,cmdb_nomodel)
 # disk_ip_cn$ip <- factor(disk_ip_cn$ip)
-# B1 B5 B6µÄÊı¾İÓ¦¸ÃÊÇ´íµÄ,ËùÒÔ²»ÔÙÓÃÕâ²¿·ÖÊı¾İ
+# B1 B5 B6çš„æ•°æ®åº”è¯¥æ˜¯é”™çš„,æ‰€ä»¥ä¸å†ç”¨è¿™éƒ¨åˆ†æ•°æ®
 disk_ip_cn <- disk_ip
 
-# 1 Éú³ÉÊı¾İ¼¯&baseline
+# 1 ç”Ÿæˆæ•°æ®é›†&baseline
 cmdb <- cmdb[!duplicated(cmdb$ip),]
 
-# 1.1. È·¶¨´¦Àí»úĞÍ
-dev_config <- read.csv(file.path(dir_data,'¸÷»úĞÍÅäÖÃ.csv'))
+# 1.1. ç¡®å®šå¤„ç†æœºå‹
+dev_config <- read.csv(file.path(dir_data,'å„æœºå‹é…ç½®.csv'))
 names(dev_config) <- c('dev_class_id','cpu_core','memory','total',
                        'disk_c','capacity','interface','raid','ssd_c','capacity_sdd')
 dev_config <- subset(dev_config,,c('dev_class_id','disk_c','total','capacity','interface'))
@@ -52,14 +52,14 @@ dev_info <- subset(dev_config,
                    dev_class_id %in% dev_need & 
                      !(dev_class_id == 'TS6' & capacity == 300))
 
-# 1.2.1. ¸øÈ·¶¨»úĞÍÌí¼ÓÓ²ÅÌÊı
+# 1.2.1. ç»™ç¡®å®šæœºå‹æ·»åŠ ç¡¬ç›˜æ•°
 cmdb_dev <- subset(cmdb,dev_class_id %in% dev_need)
 # cmdb_dev <- cmdb
 cmdb_dev$disk_cNew <- dev_info$disk_c[match(cmdb_dev$dev_class_id,dev_info$dev_class_id)]
 cmdb_dev$totalNew <- dev_info$total[match(cmdb_dev$dev_class_id,dev_info$dev_class_id)]
 cmdb_dev$itfNew <- as.character(dev_info$interface[match(cmdb_dev$dev_class_id,dev_info$dev_class_id)])
 
-# 1.2.2. ¸øÄ³¼¸¸ö»úĞÍµÄÊı¾İ¸ù¾İÊ±¼ä½øĞĞĞŞÕı.
+# 1.2.2. ç»™æŸå‡ ä¸ªæœºå‹çš„æ•°æ®æ ¹æ®æ—¶é—´è¿›è¡Œä¿®æ­£.
 cmdb_dev$itfNew[cmdb_dev$dev_class_id %in% dev_need[1:4]] <- 'SATA2'
 cmdb_dev$itfNew[cmdb_dev$dev_class_id == 'C1' & 
                   cmdb_dev$use_time > as.POSIXct('2012-02-01')] <- 'SATA3'
@@ -90,7 +90,7 @@ cmdb_dev$totalNew[cmdb_dev$dev_class_id == 'C1' &
 cmdb_dev$cacheNew[cmdb_dev$itfNew == 'SATA2'] <- '32MB'
 cmdb_dev$cacheNew[cmdb_dev$itfNew == 'SATA3'] <- '64MB'
 cmdb_dev$cacheNew[cmdb_dev$dev_class_id == 'TS6'] <- '64MB'
-# 1.3. ½áºÏdisk_ip,cmdb_dev,data.mcfÉú³É°üº¬MCDINRÁù¸öÎ¬¶ÈÊı¾İµÄ±í
+# 1.3. ç»“åˆdisk_ip,cmdb_dev,data.mcfç”ŸæˆåŒ…å«MCDINRå…­ä¸ªç»´åº¦æ•°æ®çš„è¡¨
 data.mcf$ol_time <- data.mcf$end - data.mcf$start
 data.config <- merge(data.mcf[,c('ip','start','f_time','end','ol_time','ol_time_fail')],
                      cmdb_dev[,c('ip','use_time','raid','dev_class_id','disk_cNew',
@@ -102,13 +102,13 @@ data.config <- merge(data.config,
                      by = 'ip',
                      all.x = T)
 
-# 1.4. Éú³ÉĞÂµÄ½Ó¿ÚÊı¾İ
+# 1.4. ç”Ÿæˆæ–°çš„æ¥å£æ•°æ®
 data.config$disk_model_c <- as.character(data.config$disk_model_c)
 data.config$disk_inter <- as.character(data.config$disk_inter)
 data.config$disk_inter[is.na(data.config$disk_inter)] <- 'NOINTER'
 data.config$disk_model_c[is.na(data.config$disk_model_c)] <- '0'
 
-# Ìí¼Ó·ÖÀàµÄ½Ó¿ÚÊı¾İ
+# æ·»åŠ åˆ†ç±»çš„æ¥å£æ•°æ®
 # tmp <- mapply(function(x,y)tapply(as.numeric(unlist(strsplit(x,'_'))),unlist(strsplit(y,'_')),sum),
 #               data.config$disk_model_c,data.config$disk_inter)
 # tmp1 <- sapply(tmp,function(x){
@@ -124,7 +124,7 @@ data.config$disk_model_c <- factor(data.config$disk_model_c)
 data.config$dup <- !duplicated(data.config$ip)
 # save(data.config,dev_info,cmdb_dev,file = file.path(dir_data,'mcf_dataConfig.Rda'))
 
-# 1.5. Éú³ÉMCF of all servers
+# 1.5. ç”ŸæˆMCF of all servers
 # load(file.path(dir_data,'mcf_dataConfig.Rda'))
 mcf_all_age <- mcf_age(data.config,ti)
 mcf_all_age$class <- 'Baseline'
@@ -139,6 +139,6 @@ mcf_all_age <- mcf_sc(mcf_all_age,'Baseline')
 pset1 <- mcf_plot(mcf_all_age,time_need,'all_age',frac_max,'Baseline')
 save(mcf_all_age,data.config,dev_info,cmdb_dev,file = file.path(dir_data,'mcf_all_age.Rda'))
 
-# 1.5 ÓÃrr°ÑÊı¾İ·ÖÎªÈı¶Î.
+# 1.5 ç”¨rræŠŠæ•°æ®åˆ†ä¸ºä¸‰æ®µ.
 # p6 <- pset1[[5]] + geom_line(data = mcf_all_age[c(2,31,43,70),],mapping = aes(time,rr),size = 1,color = 'blue') 
 # ggsave(file=file.path(dir_data,'output','mcf',paste('all_rr_3phase.png',sep='_')), plot=p6, width = 12, height = 9, dpi = 100)

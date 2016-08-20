@@ -1,35 +1,35 @@
-#@@@ capacity_error.R: ·ÖÎöÈİÁ¿,Ó²ÅÌÊı,Ó²ÅÌÀàĞÍ,·şÎñÀàĞÍÔÚ²»Í¬µÄÊ±¼ä¶ÎÓë¹ÊÕÏÂÊÖ®¼äµÄ¹ØÏµ.
+#@@@ capacity_error.R: åˆ†æå®¹é‡,ç¡¬ç›˜æ•°,ç¡¬ç›˜ç±»å‹,æœåŠ¡ç±»å‹åœ¨ä¸åŒçš„æ—¶é—´æ®µä¸æ•…éšœç‡ä¹‹é—´çš„å…³ç³».
 rm(list = ls())
 dir_data <- 'D:/Data/Disk Number'
 load(file.path(dir_data,'disk_ip.Rda'))
 
-# Ñ¡È¡ĞĞ
+# é€‰å–è¡Œ
 col_need <- c('ip','total','disk_c','disc_c','head_c',
               'disk_model','disk_model_c','disk_model_c1',
               'dev_class_name','model_name','bs1','raid',
               'class','fcount','biclass','use_time','f_time')
 disk_error <- disk_ip[,col_need]
 
-# Éú³É·şÒÛÊ±¼ä
+# ç”Ÿæˆæœå½¹æ—¶é—´
 disk_ip$f_time[disk_ip$f_time == as.POSIXct('1970-01-01',tz = 'UTC')] <- as.POSIXct('2015-01-01',tz = 'UTC')
 tmp <- disk_ip$f_time - disk_ip$use_time
 units(tmp) <- 'days'
 disk_error$ol_time <- tmp
-# ´¦Àíol_timeĞ¡ÓÚ0µÄ
+# å¤„ç†ol_timeå°äº0çš„
 disk_error$class[disk_error$ol_time < 0] <- 0
 disk_error$biclass[disk_error$ol_time < 0] <- 0
 disk_error$ol_time[disk_error$ol_time < 0] <- -1
 disk_error$ol_time <- as.numeric(disk_error$ol_time)
 
-# ·Çµ¥Ò»model»úÆ÷
+# éå•ä¸€modelæœºå™¨
 nosingle <- subset(disk_error,disk_model_c1 != 1)
 single <- subset(disk_error,disk_model_c1 == 1)
 
-# ºÃ»ú»µ»ú
+# å¥½æœºåæœº
 disk_error.good <- subset(disk_error,biclass == 0)
 disk_error.bad <- subset(disk_error,biclass == 1)
 
-#Éú³ÉÊı¾İ
+#ç”Ÿæˆæ•°æ®
 disk_error$qtr <- paste(format(disk_error$use_time, "%y"), 
                         sprintf("%02i", (as.POSIXlt(disk_error$use_time)$mon) %/% 1L + 1L), 
                         sep="")
@@ -38,24 +38,24 @@ disk_error$qtrf <- paste(format(disk_error$f_time, "%y"),
                          sep="")
 save(cmdb,disk_error,disk_model,file = file.path(dir_data,'disk_error_1m_1m.Rda'))
 ##########################################################################################################
-# ×÷Í¼: Ê¹ÓÃÄ³Ò»ÉÏ¼ÜÊ±¼ä·¶Î§ÄÚµÄ»úÆ÷µÄ¹ÊÕÏÊ±¼ä½øĞĞ×÷Í¼
+# ä½œå›¾: ä½¿ç”¨æŸä¸€ä¸Šæ¶æ—¶é—´èŒƒå›´å†…çš„æœºå™¨çš„æ•…éšœæ—¶é—´è¿›è¡Œä½œå›¾
 require(ggplot2)
-# fig.1: Í³¼ÆÍ¼±í
-#¸÷unitsÉÏ¼Ü»úÆ÷ÊıÒÔ¼°¹ÊÕÏÕ¼±È.
+# fig.1: ç»Ÿè®¡å›¾è¡¨
+#å„unitsä¸Šæ¶æœºå™¨æ•°ä»¥åŠæ•…éšœå æ¯”.
 eval(parse(text = sprintf('geo_aes <- aes(x = qtr,fill = as.character(biclass))',attr)))
-title <- '¸÷ÔÂÉÏ¼Ü»úÆ÷ÊıÓë¹ÊÕÏ'
+title <- 'å„æœˆä¸Šæ¶æœºå™¨æ•°ä¸æ•…éšœ'
 p <- ggplot(disk_error) + geom_histogram(geo_aes) +
   theme(text = element_text(size=15),axis.text.x = element_text(angle=90, vjust=1)) +
   ggtitle(title) + xlab('months')
 ggsave(file=file.path(dir_data,'output','capacity_error',paste('STA_',title,'.png',sep = '')), 
                              plot=p, width = 12, height = 9, dpi = 100)
-#ÈİÁ¿histÍ¼
+#å®¹é‡histå›¾
 attrset <- c('disk_c','disc_c','head_c',
              'disk_model','disk_model_c','disk_model_c1',
              'dev_class_name','model_name','raid','bs1')
 plot.total <- subset(disk_error,total %in% c(250,500,1000,12000,24000))
 eval(parse(text = sprintf('geo_aes <- aes(x = as.character(total),fill = factor(as.character(%s)))','biclass')))
-title <- '¸÷ÈİÁ¿Ó²ÅÌÓë¹ÊÕÏ'
+title <- 'å„å®¹é‡ç¡¬ç›˜ä¸æ•…éšœ'
 p <- ggplot(plot.total) + geom_histogram(geo_aes) +
   theme(text = element_text(size=15),axis.text.x = element_text(angle=90, vjust=1)) +
   ggtitle(title) + xlab('capacity')
@@ -77,7 +77,7 @@ for (i in 1:length(attrset)) {
 # c <- subset(plot.total,total == 12000)
 # d <- subset(plot.total,total == 24000)
 ##########################################################################################################
-# fig.2*14: ¸÷¼¾¶ÈÉÏ¼Ü»úÆ÷¹ÊÕÏÊ±µÄ·şÒÛÊ±¼ä¹ØÓÚÈİÁ¿,ÅÌÊı,»úĞÍµÄ·Ö²¼
+# fig.2*14: å„å­£åº¦ä¸Šæ¶æœºå™¨æ•…éšœæ—¶çš„æœå½¹æ—¶é—´å…³äºå®¹é‡,ç›˜æ•°,æœºå‹çš„åˆ†å¸ƒ
 attrset <- c('total','disk_c','disc_c','head_c',
              'disk_model','disk_model_c','disk_model_c1',
              'dev_class_name','model_name','raid')
@@ -111,7 +111,7 @@ for (i in 1:length(attrset)) {
                             value = numeric(),
                             color = character())
     for (k in 1:count_attr){
-      # Ä³×Ö¶ÎÄ³Öµ¹ÊÕÏÂÊ¼ÆËã(idÎªÊ±¼ä,valueÎª¹ÊÕÏÂÊ,colorÎªÄ³×Ö¶ÎÖµ)
+      # æŸå­—æ®µæŸå€¼æ•…éšœç‡è®¡ç®—(idä¸ºæ—¶é—´,valueä¸ºæ•…éšœç‡,colorä¸ºæŸå­—æ®µå€¼)
       eval(parse(text = sprintf('table.attr_each <- table(subset(plot.data, %s == names(table.attr)[k],%s))',curr.attr,'qtrf')))
       table.attr_each <- table.attr_each/table.attr_all[names(table.attr_all) == names(table.attr)[k]]
       len <- length(table.attr_each)
@@ -133,7 +133,7 @@ for (i in 1:length(attrset)) {
 }
 ##########################################################################################################
 
-# # ×÷Í¼A: »ùÓÚ¹ÊÕÏÊ±ÒÑ·şÒÛÊ±¼ä½øĞĞ·ÖÀà×÷Í¼
+# # ä½œå›¾A: åŸºäºæ•…éšœæ—¶å·²æœå½¹æ—¶é—´è¿›è¡Œåˆ†ç±»ä½œå›¾
 # require(ggplot2)
 # plotdata.bad <- subset(disk_error.bad,ol_time < 365*5 - 26)
 # plotdata.bad$ol_week <- ceiling(plotdata.bad$ol_time/(30))

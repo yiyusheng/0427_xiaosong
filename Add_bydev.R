@@ -1,15 +1,15 @@
-#@@@ Ìí¼ÓĞÂÊı¾İ
+#@@@ æ·»åŠ æ–°æ•°æ®
 rm(list = ls())
 dir_data <- 'D:/Data/Disk Number'
 load(file.path(dir_data,'disk_number_label.Rda'))
 
-# 1. ²é¿´´óÁ¿È±Ê§Êı¾İµÄ»úĞÍ
+# 1. æŸ¥çœ‹å¤§é‡ç¼ºå¤±æ•°æ®çš„æœºå‹
 cmdb_nomodel <- subset(cmdb,!(ip %in% disk_ip$ip))
 sort(table(cmdb_nomodel$dev_class_id))
 cmdb_nomodel$total <- 0
 cmdb_nomodel$disk_c <- 0
 
-# 2. ²é¿´ÓĞmodelµÄ»úÆ÷µÄÊı¾İ(B6,A5,B5,M1,TS8,B1,A1)
+# 2. æŸ¥çœ‹æœ‰modelçš„æœºå™¨çš„æ•°æ®(B6,A5,B5,M1,TS8,B1,A1)
 cmdb_model <- merge(disk_ip,cmdb,by = 'ip')
 dev_need <- c('A1','A5','B1','B5','B6','TS8','M1')
 col_need <- c('ip','total','disk_c','dev_class_id','model_name','dept_id','bs1',
@@ -17,7 +17,7 @@ col_need <- c('ip','total','disk_c','dev_class_id','model_name','dept_id','bs1',
 cmdb_model_dev <- subset(cmdb_model,dev_class_id %in% dev_need,col_need)
 cmdb_model_dev <- cmdb_model_dev[order(cmdb_model_dev$dev_class_id),]
 
-# 3. ´¦Àí34707Ì¨B6
+# 3. å¤„ç†34707å°B6
 mnA <- c('DELL DCS6230','HP DL2000')
 mnB <- c('HUAWEI XH320v2','DELL DCSC6100')
 cmdb_nomodel$total[cmdb_nomodel$dev_class_id == 'B6' &
@@ -33,7 +33,7 @@ cmdb_nomodel$total[cmdb_nomodel$dev_class_id == 'B6' &
 cmdb_nomodel$disk_c[cmdb_nomodel$dev_class_id == 'B6' &
                       cmdb_nomodel$total != 0] <- 1
 
-# 4. ´¦Àí14478Ì¨A5
+# 4. å¤„ç†14478å°A5
 A5_model <- subset(cmdb_model_dev,dev_class_id == 'A5')
 A5_model <- A5_model[order(A5_model$model_name),]
 cmdb_nomodel$total[cmdb_nomodel$dev_class_id == 'A5' &
@@ -53,7 +53,7 @@ cmdb_nomodel$disk_c[cmdb_nomodel$dev_class_id == 'A5' &
 cmdb_nomodel$disk_c[cmdb_nomodel$dev_class_id == 'A5' &
                       cmdb_nomodel$total >= 1200] <- 12
 
-# 5. ´¦Àí5179Ì¨B5
+# 5. å¤„ç†5179å°B5
 B5_model <- subset(cmdb_model_dev,dev_class_id == 'B5')
 B5_model <- B5_model[order(B5_model$model_name),]
 cmdb_nomodel$total[cmdb_nomodel$dev_class_id == 'B5' &
@@ -61,7 +61,7 @@ cmdb_nomodel$total[cmdb_nomodel$dev_class_id == 'B5' &
 cmdb_nomodel$disk_c[cmdb_nomodel$dev_class_id == 'B5' &
                       cmdb_nomodel$total >= 500] <- 1
 
-# 6. ´¦Àí8739Ì¨M1
+# 6. å¤„ç†8739å°M1
 M1_model <- subset(cmdb_model_dev,dev_class_id == 'M1')
 M1_model <- M1_model[order(M1_model$model_name),]
 cmdb_nomodel$total[cmdb_nomodel$dev_class_id == 'M1' &
@@ -71,7 +71,7 @@ cmdb_nomodel$total[cmdb_nomodel$dev_class_id == 'M1' &
 cmdb_nomodel$disk_c[cmdb_nomodel$dev_class_id == 'M1' &
                       cmdb_nomodel$total >= 500] <- 12
 
-# 7. ´¦Àí5656Ì¨TS8
+# 7. å¤„ç†5656å°TS8
 TS8_model <- subset(cmdb_model_dev,dev_class_id == 'TS8')
 TS8_model <- TS8_model[order(TS8_model$model_name),]
 cmdb_nomodel$total[cmdb_nomodel$dev_class_id == 'TS8' &

@@ -5,7 +5,7 @@ rm(list = ls())
 # library(RMySQL)
 dir_data <- 'D:/Data/Disk Number/'
 in_name <- 'uwork_20120101-20131210.csv'
-in_name1 <- '¹ÊÕÏµ¥¾«¼ò_06-09.csv'
+in_name1 <- 'æ•…éšœå•ç²¾ç®€_06-09.csv'
 out_name <- 'bad_pre(0401_1231).csv'
 in_path <- paste(dir_data,in_name,sep='')
 in_path1 <- paste(dir_data,in_name1,sep='')
@@ -25,23 +25,23 @@ data.fl <- rbind(data.fl,data.fl1)
 data.fl$f_time <- as.POSIXct(data.fl$f_time,tz = 'UTC')
 
 # 2. del space
-data.fl$ftype[data.fl$ftype == 'Ó²ÅÌ¹ÊÕÏ£¨ÓÐÈßÓà£© '] <- 'Ó²ÅÌ¹ÊÕÏ£¨ÓÐÈßÓà£©'
+data.fl$ftype[data.fl$ftype == 'ç¡¬ç›˜æ•…éšœï¼ˆæœ‰å†—ä½™ï¼‰ '] <- 'ç¡¬ç›˜æ•…éšœï¼ˆæœ‰å†—ä½™ï¼‰'
 data.fl$ftype <- factor(data.fl$ftype)
 
 # 3. add class
 data.fl$class <- -1
-# data.replace <- subset(data.fl,ftype_d1 == 'Ó²ÅÌ¹ÊÕÏ;' | ftype_d2 == 'Ó²ÅÌ¹ÊÕÏ;')
-ftlist <- c('Ó²ÅÌ¹ÊÕÏ£¨ÓÐÈßÓà£©','Ó²ÅÌ¹ÊÕÏ£¨ÓÐÈßÓà£¬²ÛÎ»Î´Öª£©',
-            'Ó²ÅÌ¹ÊÕÏ£¨ÎÞÈßÓà£©','Ó²ÅÌ¹ÊÕÏ£¨ÎÞÈßÓà£¬ÔÚÏß»»ÅÌ£©',
-            'Ó²ÅÌ¼´½«¹ÊÕÏ£¨ÓÐÈßÓà£©','²Ù×÷ÏµÍ³Ó²ÅÌ¹ÊÕÏ£¨ÎÞÈßÓà£©')
+# data.replace <- subset(data.fl,ftype_d1 == 'ç¡¬ç›˜æ•…éšœ;' | ftype_d2 == 'ç¡¬ç›˜æ•…éšœ;')
+ftlist <- c('ç¡¬ç›˜æ•…éšœï¼ˆæœ‰å†—ä½™ï¼‰','ç¡¬ç›˜æ•…éšœï¼ˆæœ‰å†—ä½™ï¼Œæ§½ä½æœªçŸ¥ï¼‰',
+            'ç¡¬ç›˜æ•…éšœï¼ˆæ— å†—ä½™ï¼‰','ç¡¬ç›˜æ•…éšœï¼ˆæ— å†—ä½™ï¼Œåœ¨çº¿æ¢ç›˜ï¼‰',
+            'ç¡¬ç›˜å³å°†æ•…éšœï¼ˆæœ‰å†—ä½™ï¼‰','æ“ä½œç³»ç»Ÿç¡¬ç›˜æ•…éšœï¼ˆæ— å†—ä½™ï¼‰')
 
 
 # for (i in 1:length(ftlist)){
 #   data.fl$class[data.fl$ftype == ftlist[i]] <- i
 #   data.fl$class[data.fl$ftype == ftlist[i] & 
-#                   (data.fl$ftype_d1 == 'Ó²ÅÌ¹ÊÕÏ;' | data.fl$ftype_d2 == 'Ó²ÅÌ¹ÊÕÏ;')] <- i+6
+#                   (data.fl$ftype_d1 == 'ç¡¬ç›˜æ•…éšœ;' | data.fl$ftype_d2 == 'ç¡¬ç›˜æ•…éšœ;')] <- i+6
 # }
-data.fl$class[(data.fl$ftype_d1 == 'Ó²ÅÌ¹ÊÕÏ;' | data.fl$ftype_d2 == 'Ó²ÅÌ¹ÊÕÏ;')] <- 7
+data.fl$class[(data.fl$ftype_d1 == 'ç¡¬ç›˜æ•…éšœ;' | data.fl$ftype_d2 == 'ç¡¬ç›˜æ•…éšœ;')] <- 7
 
 
 # 4. delete no ip

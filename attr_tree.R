@@ -1,6 +1,6 @@
-# Çó»úÐÍ,ÒµÎñ,RAID,ÅÌÊý,ÈÝÁ¿,½Ó¿ÚºÍcacheÖ®¼äµÄÏà¹Ø¹ØÏµ,²¢¾ö¶¨Ê÷ÐÍfixÍ¼µÄ½á¹¹
+# æ±‚æœºåž‹,ä¸šåŠ¡,RAID,ç›˜æ•°,å®¹é‡,æŽ¥å£å’Œcacheä¹‹é—´çš„ç›¸å…³å…³ç³»,å¹¶å†³å®šæ ‘åž‹fixå›¾çš„ç»“æž„
 
-# 1. ²ÎÊýÓëµ¼ÈëÊý¾Ý
+# 1. å‚æ•°ä¸Žå¯¼å…¥æ•°æ®
 rm(list = ls())
 dir_data <- 'D:/Data/Disk Number'
 dir_code <- 'D:/Git/0427_xiaosong'
@@ -9,7 +9,7 @@ dir_lib <- 'D:/Git/R_Function'
 load(file.path(dir_data,'mcf_all_age.Rda'))
 source(file.path(dir_lib,'entropy.R'))
 
-# 2. Çó¸÷×Ö¶ÎÖ®¼äµÄÌõ¼þìØ
+# 2. æ±‚å„å­—æ®µä¹‹é—´çš„æ¡ä»¶ç†µ
 col_need <- c('dev_class_id','bs1','raid','disk_cNew','totalNew','itfNew','cacheNew')
 cmdb_dev <- cmdb_dev[,col_need]
 for (i in 1:length(col_need)){

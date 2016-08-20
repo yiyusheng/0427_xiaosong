@@ -1,8 +1,8 @@
-#@@@ ºÏ²¢¹ÊÕÏµ¥,¼ÆËãÉÏ¼ÜÊ±¼ä
+#@@@ åˆå¹¶æ•…éšœå•,è®¡ç®—ä¸Šæ¶æ—¶é—´
 rm(list = ls())
 dir_data <- 'D:/Data/Disk Number/'
 
-# 1. ¶ÁÈ¡uworkÊı¾İ,ÒòÎªhelperÖĞÊÇÓĞuse_timeµÄ,ËùÒÔ°ÑuworkÒ²¼ÓÒ»¸öuse_time
+# 1. è¯»å–uworkæ•°æ®,å› ä¸ºhelperä¸­æ˜¯æœ‰use_timeçš„,æ‰€ä»¥æŠŠuworkä¹ŸåŠ ä¸€ä¸ªuse_time
 load('D:/Data/Disk Number/flist(uwork[2012-2014]).Rda')
 data.flist_uwork <- data.flist
 data.flist_uwork$fType <- paste(data.flist_uwork$ftype,'uwork',sep = '_')
@@ -10,7 +10,7 @@ data.flist_uwork <- data.flist_uwork[,c('ip','svr_id','f_time','class','fType')]
 # data.flist_uwork <- data.flist_uwork[data.flist_uwork$class>6,c('ip','svr_id','f_time','class','fType')]
 data.flist_uwork$use_time <- as.POSIXct('2013-12-01',tz = 'UTC')
 data.flist_uwork$from <- 'uwork'
-# 2. ¶ÁÈ¡helperÊı¾İ
+# 2. è¯»å–helperæ•°æ®
 load('D:/Data/Disk Number/flist(helper[2008-2013]).Rda')
 data.flist_helper <- data.flist
 data.flist_helper$fType <- paste(data.flist_helper$type,'helper',sep = '_')
@@ -19,14 +19,14 @@ data.flist_helper <- data.flist_helper[,c('ip','svr_id','f_time','class','use_ti
 data.flist_helper$f_time <- as.POSIXct(data.flist_helper$f_time,tz = 'UTC')
 data.flist_helper$use_time <- as.POSIXct(data.flist_helper$use_time,tz = 'UTC')
 data.flist_helper$from <- 'helper'
-# 3. ºÏ²¢Êı¾İ
+# 3. åˆå¹¶æ•°æ®
 data.flist <- rbind(data.flist_helper,data.flist_uwork)
 data.flist$ip <- factor(data.flist$ip)
 data.flist$svr_id <- factor(data.flist$svr_id)
-# 4. ip¼ìÑé
+# 4. ipæ£€éªŒ
 # regexp.ip <- "^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$"
 # sum(grep(regexp.ip,data.flist$ip,value = T) == as.character(data.flist$ip)) == nrow(data.flist)
-# 5. È¥ÖØ(3ÌìµÄÈ¥ÖØÊ±¼ä)
+# 5. å»é‡(3å¤©çš„å»é‡æ—¶é—´)
 dayDup <- 3
 data.flist <- data.flist[order(data.flist$ip,data.flist$f_time),]
 data.flist$svr_id <- as.character(data.flist$svr_id)
@@ -49,5 +49,5 @@ for (i in 2:nrow(data.flist)){
 }
 data.flist <- data.flist[-delset,]
 data.flist$svr_id <- factor(data.flist$svr_id)
-# 6.´æ´¢
+# 6.å­˜å‚¨
 save(data.flist,file = file.path(dir_data,'flist.Rda'))

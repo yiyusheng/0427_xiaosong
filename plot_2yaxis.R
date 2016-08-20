@@ -1,4 +1,4 @@
-# ÓÃggplot»­Ë«yÖáline
+# ç”¨ggplotç”»åŒyè½´line
 library(ggplot2)
 library(gtable)
 library(grid)

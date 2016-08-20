@@ -1,4 +1,4 @@
-# ¶ÔServerÅäÖÃÏà¹ØÎÊÌâµÄ´¦Àí.
+# å¯¹Serveré…ç½®ç›¸å…³é—®é¢˜çš„å¤„ç†.
 rm(list = ls())
 require(ggplot2)
 source('MCF_function.R')
@@ -22,7 +22,7 @@ cmdb <- subset(cmdb, dev_class_id %in% dev_need)
 data.config <- subset(data.config,use_time > as.POSIXct('2010-01-01'))
 data.config <- subset(data.config,dev_class_id %in% dev_need)
 
-# 1. ÅÌÊı¶Ô¹ÊÕÏµÄÓ°Ïì(Q1, Q6)
+# 1. ç›˜æ•°å¯¹æ•…éšœçš„å½±å“(Q1, Q6)
 item <- 'disk_cNew'
 class_suffix <- ''
 title <- 'Q6_Disk_Number'
@@ -35,7 +35,7 @@ mcf_item_age <- mcf_merge(mcf_item_age,item,item_need,
 mcf_item_age_Q6 <- mcf_sc(mcf_item_age,stand_class)
 eval(parse(text = sprintf('p_%s <- mcf_plot(mcf_item_age_Q6,time_need,title,frac_max,title)',item)))
 
-# 1.1. A1»úĞÍÓĞ8¸öÅÌµÄ»úÆ÷ÔÚRAID5ºÍ2RAID1+6RAID10Ê±µÄMCF
+# 1.1. A1æœºå‹æœ‰8ä¸ªç›˜çš„æœºå™¨åœ¨RAID5å’Œ2RAID1+6RAID10æ—¶çš„MCF
 item <- 'raid'
 title <- 'Q6A_A1_RAID'
 class_suffix <- ''
@@ -48,7 +48,7 @@ mcf_item_age <- mcf_merge(mcf_item_age,item,item_need,
 mcf_item_age_Q6A <- mcf_sc(mcf_item_age,stand_class)
 eval(parse(text = sprintf('p_%s <- mcf_plot(mcf_item_age_Q6A,time_need,title,frac_max,title)',item)))
 
-# 1.2. RAID5»úÆ÷²»Í¬»úĞÍµÄµÄMCF
+# 1.2. RAID5æœºå™¨ä¸åŒæœºå‹çš„çš„MCF
 item <- 'dev_class_id'
 title <- 'Q6B_RAID5'
 stand_class <- 'baseline'
@@ -61,7 +61,7 @@ mcf_item_age <- mcf_merge(mcf_item_age,item,item_need,
 mcf_item_age_Q6B <- mcf_sc(mcf_item_age,stand_class)
 eval(parse(text = sprintf('p_%s <- mcf_plot(mcf_item_age_Q6B,time_need,title,frac_max,title)',item)))
 
-# 1.3. »úĞÍ,ÅÌÊı,RAID½áºÏÌÖÂÛ
+# 1.3. æœºå‹,ç›˜æ•°,RAIDç»“åˆè®¨è®º
 data.config$ddr <- paste(data.config$dev_class_id,data.config$disk_cNew,data.config$raid,sep='_')
 item <- 'ddr'
 title <- 'Q6C_DDR'
@@ -84,14 +84,14 @@ mean_sm <- data.frame(item = levels(mcf_item_age_Q6C$class),
 mean_sm <- mean_sm[order(mean_sm$mean_sm),]
 row.names(mean_sm) <- NULL
 
-# 1.4. »úĞÍÓëraid,»úĞÍÓëmodelÁªÁ¢,½øĞĞ¹ıÂË
+# 1.4. æœºå‹ä¸raid,æœºå‹ä¸modelè”ç«‹,è¿›è¡Œè¿‡æ»¤
 data.config$dr <- paste(data.config$dev_class_id,data.config$raid,sep='_')
 data.config$dm <- paste(data.config$dev_class_id,data.config$disk_model,sep = '_')
 sta_dr <- sort(tapply(data.config$disk_cNew,data.config$dr,sum))
 sta_dm <- sort(tapply(data.config$disk_cNew,data.config$dm,sum))
 sta_dr <- data.frame(item = names(sta_dr),value = as.numeric(sta_dr))
 sta_dm <- data.frame(item = names(sta_dm),value = as.numeric(sta_dm))
-# 1.5. RAIDÓëNORAIDµÄMCF±È½Ï
+# 1.5. RAIDä¸NORAIDçš„MCFæ¯”è¾ƒ
 data.config$israid <- 'RAID'
 data.config$israid[data.config$raid == 'NORAID'] <- 'NORAID'
 item <- 'israid'
@@ -106,7 +106,7 @@ mcf_item_age <- mcf_merge(mcf_item_age,item,item_need,
 mcf_item_age_Q6D <- mcf_sc(mcf_item_age,stand_class)
 eval(parse(text = sprintf('p_%s <- mcf_plot(mcf_item_age_Q6D,time_need,title,frac_max,title)',item)))
 
-# 1.6. B5,B6,B1RAID1»úÆ÷µÄMCF±È½Ï
+# 1.6. B5,B6,B1RAID1æœºå™¨çš„MCFæ¯”è¾ƒ
 item <- 'dev_class_id'
 title <- 'Q6E_RAID'
 stand_class <- 'baseline'
@@ -124,7 +124,7 @@ col_need <- c('svr_asset_id','dev_class_id','type_name','model_name','ip','dept_
 cmdb_Q6EA <- subset(cmdb,ip %in% data.config$ip[data.config$ol_time_fail != -1] & dev_class_id == 'B6',col_need)
 cmdb_Q6EB <- subset(cmdb,ip %in% data.config$ip[data.config$ol_time_fail == -1] & dev_class_id == 'B6',col_need)
 
-# 2. ÈİÁ¿¶Ôµ¥ÅÌ´æ´¢ÏµÍ³¹ÊÕÏµÄÓ°Ïì(Q2)
+# 2. å®¹é‡å¯¹å•ç›˜å­˜å‚¨ç³»ç»Ÿæ•…éšœçš„å½±å“(Q2)
 item <- 'totalNew'
 class_suffix <- 'GB'
 title <- 'Q2_capacity_single_disk'
@@ -137,7 +137,7 @@ mcf_item_age <- mcf_merge(mcf_item_age,item,item_need,
 mcf_item_age_Q2 <- mcf_sc(mcf_item_age,stand_class)
 eval(parse(text = sprintf('p_%s <- mcf_plot(mcf_item_age_Q2,time_need,title,frac_max,title)',item)))
 
-# 3. ÈİÁ¿¶Ô¶àÅÌ´æ´¢ÏµÍ³¹ÊÕÏµÄÓ°Ïì(Q5)
+# 3. å®¹é‡å¯¹å¤šç›˜å­˜å‚¨ç³»ç»Ÿæ•…éšœçš„å½±å“(Q5)
 item <- 'totalNew'
 class_suffix <- 'GB'
 title <- 'Q5_capacity_multi_disk'
@@ -150,7 +150,7 @@ mcf_item_age <- mcf_merge(mcf_item_age,item,item_need,
 mcf_item_age_Q5 <- mcf_sc(mcf_item_age,stand_class)
 eval(parse(text = sprintf('p_%s <- mcf_plot(mcf_item_age_Q5,time_need,title,frac_max,title)',item)))
 
-# 4. Disk Model¶Ôµ¥ÅÌ´æ´¢ÏµÍ³¹ÊÕÏµÄÓ°Ïì(Q3)
+# 4. Disk Modelå¯¹å•ç›˜å­˜å‚¨ç³»ç»Ÿæ•…éšœçš„å½±å“(Q3)
 item <- 'disk_model'
 class_suffix <- ''
 title <- 'Q3_disk_model_singleA'
@@ -165,7 +165,7 @@ mcf_item_age <- mcf_merge(mcf_item_age,item,item_need,
 mcf_item_age_Q3 <- mcf_sc(mcf_item_age,stand_class)
 eval(parse(text = sprintf('p_%s <- mcf_plot(mcf_item_age_Q3,time_need,title,frac_max,title)',item)))
 
-# 5. Disk Model¶Ô¶àÅÌ´æ´¢ÏµÍ³(µ¥Ò»model)¹ÊÕÏµÄÓ°Ïì(Q9)
+# 5. Disk Modelå¯¹å¤šç›˜å­˜å‚¨ç³»ç»Ÿ(å•ä¸€model)æ•…éšœçš„å½±å“(Q9)
 item <- 'disk_model'
 class_suffix <- ''
 title <- 'Q9_disk_model_singleB'
@@ -178,7 +178,7 @@ mcf_item_age <- mcf_merge(mcf_item_age,item,item_need,
 mcf_item_age_Q9 <- mcf_sc(mcf_item_age,stand_class)
 eval(parse(text = sprintf('p_%s <- mcf_plot(mcf_item_age_Q9,time_need,title,frac_max,title)',item)))
 
-# 6. Disk Model¶Ô¶àÅÌ´æ´¢ÏµÍ³(¶àmodel)¹ÊÕÏµÄÓ°Ïì(Q10)
+# 6. Disk Modelå¯¹å¤šç›˜å­˜å‚¨ç³»ç»Ÿ(å¤šmodel)æ•…éšœçš„å½±å“(Q10)
 item <- 'disk_model'
 class_suffix <- ''
 title <- 'Q10_disk_model_multi'
@@ -191,7 +191,7 @@ mcf_item_age <- mcf_merge(mcf_item_age,item,item_need,
 mcf_item_age_Q10 <- mcf_sc(mcf_item_age,stand_class)
 eval(parse(text = sprintf('p_%s <- mcf_plot(mcf_item_age_Q10,time_need,title,frac_max,title)',item)))
 
-# 7. RAID(µ¥Ò»)¶Ô¶àÅÌ´æ´¢ÏµÍ³¹ÊÕÏµÄÓ°Ïì(Q7)
+# 7. RAID(å•ä¸€)å¯¹å¤šç›˜å­˜å‚¨ç³»ç»Ÿæ•…éšœçš„å½±å“(Q7)
 item <- 'raid'
 class_suffix <- ''
 title <- 'Q7_raid_single'
@@ -204,7 +204,7 @@ mcf_item_age <- mcf_merge(mcf_item_age,item,item_need,
 mcf_item_age_Q7 <- mcf_sc(mcf_item_age,stand_class)
 eval(parse(text = sprintf('p_%s <- mcf_plot(mcf_item_age_Q7,time_need,title,frac_max,title)',item)))
 
-# 8. RAID(»ìºÏ)¶Ô¶àÅÌ´æ´¢ÏµÍ³¹ÊÕÏµÄÓ°Ïì(Q8)
+# 8. RAID(æ··åˆ)å¯¹å¤šç›˜å­˜å‚¨ç³»ç»Ÿæ•…éšœçš„å½±å“(Q8)
 item <- 'raid'
 class_suffix <- ''
 title <- 'Q8_raid_multiple'
@@ -218,7 +218,7 @@ mcf_item_age <- mcf_merge(mcf_item_age,item,item_need,
 mcf_item_age_Q8 <- mcf_sc(mcf_item_age,stand_class)
 eval(parse(text = sprintf('p_%s <- mcf_plot(mcf_item_age_Q8,time_need,title,frac_max,title)',item)))
 
-# 9. ½Ó¿Ú¶Ôµ¥ÅÌ´æ´¢ÏµÍ³¹ÊÕÏµÄÓ°Ïì(Q4)
+# 9. æ¥å£å¯¹å•ç›˜å­˜å‚¨ç³»ç»Ÿæ•…éšœçš„å½±å“(Q4)
 item <- 'itfNew'
 class_suffix <- ''
 title <- 'Q4_interface_simple'
@@ -231,7 +231,7 @@ mcf_item_age <- mcf_merge(mcf_item_age,item,item_need,
 mcf_item_age_Q4 <- mcf_sc(mcf_item_age,stand_class)
 eval(parse(text = sprintf('p_%s <- mcf_plot(mcf_item_age_Q4,time_need,title,frac_max,title)',item)))
 
-# 10. ½Ó¿Ú¶Ô¶àÅÌ´æ´¢ÏµÍ³¹ÊÕÏµÄÓ°Ïì(Q11)
+# 10. æ¥å£å¯¹å¤šç›˜å­˜å‚¨ç³»ç»Ÿæ•…éšœçš„å½±å“(Q11)
 item <- 'itfNew'
 class_suffix <- ''
 title <- 'Q11_interface_multi'

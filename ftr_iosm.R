@@ -1,4 +1,4 @@
-# IO特征与业务之间的对应关系
+# IO鐗瑰緛涓庝笟鍔′箣闂寸殑瀵瑰簲鍏崇郴
 rm(list = ls())
 source('D:/Git/R_Function/Rfun.R')
 require('ggplot2')
@@ -10,7 +10,7 @@ dir_dataA <- 'D:/Data/Disk Number'
 dir_data <- 'D:/Data/attrid'
 
 #@@@ LOAD DATA
-# 1. cmdb数据
+# 1. cmdb鏁版嵁
 load(file.path(dir_dataA,'disk_number_label.Rda'))
 load(file.path(dir_dataA,'mcf_all_age_rsv2014.Rda'))
 data.config$bs1 <- cmdb_dev$bs1[match(data.config$ip,cmdb_dev$ip)]
@@ -20,7 +20,7 @@ dev_need <- c('TS3','TS4','TS5','TS6','C1')
 data.config$dev_class_id <- factor(data.config$dev_class_id)
 
 
-# 2. 样本及IO与SMART统计数据
+# 2. 鏍锋湰鍙奍O涓嶴MART缁熻鏁版嵁
 k131_svrid <- read.csv(file.path(dir_data,'k131_svrid_old'),header = F)
 names(k131_svrid) <- 'svrid'
 col_need <- c('svr_asset_id','ip','dev_class_id','bs1','type_name','pos_id')
@@ -31,7 +31,7 @@ k131_svrid <- factorX(k131_svrid)
 load(file.path(dir_data,'sta_smart.Rda'))
 load(file.path(dir_data,'sta_io.Rda'))
 
-# 3. IO特征数据
+# 3. IO鐗瑰緛鏁版嵁
 data <- read.csv(file.path(dir_data,'k131_902'))
 data$date <- as.POSIXct(data$date)
 col_need <- c('svr_asset_id','ip','dev_class_id','bs1','type_name','pos_id')
@@ -40,7 +40,7 @@ data$db <- paste(data$dev_class_id,data$bs1,sep='_')
 data$dbt <- paste(data$db,data$type_name,sep='_')
 data <- factorX(data)
 
-# 4. 作图
+# 4. 浣滃浘
 table.db <- table(data$db)
 for (i in 1:length(dev_need)){
   d <- dev_need[i]

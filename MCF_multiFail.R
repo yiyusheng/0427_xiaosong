@@ -1,4 +1,4 @@
-# ¶à´Î¹ÊÕÏÖ®¼äµÄ¹ØÁªĞÔ·ÖÎö
+# å¤šæ¬¡æ•…éšœä¹‹é—´çš„å…³è”æ€§åˆ†æ
 rm(list = ls())
 require(ggplot2)
 source('MCF_function.R')
@@ -11,7 +11,7 @@ dir_data <- 'D:/Data/Disk Number'
 # load(file.path(dir_data,'mcf_all_age.Rda'))
 load(file = file.path(dir_data,'MCF_sd.Rda'))
 
-#1. Çó»úÆ÷,µ¶¼Ü,»ú¹ñÉÏ¶à´Î¹ÊÕÏµÄ·Ö²¼,ÒªÓĞµÚÒ»´Î¹ÊÕÏÊ±¼ä,MTBF
+#1. æ±‚æœºå™¨,åˆ€æ¶,æœºæŸœä¸Šå¤šæ¬¡æ•…éšœçš„åˆ†å¸ƒ,è¦æœ‰ç¬¬ä¸€æ¬¡æ•…éšœæ—¶é—´,MTBF
 # a <- tapply(tmp$ip,tmp$ip,length)
 # b <- tapply(tmp$rack_name,tmp$rack_name,length)
 # c <- tapply(tmp$blade_name,tmp$blade_name,length)
@@ -22,66 +22,66 @@ server.ftime <- data.frame(name = names(server.ftime),
                                            nrow = length(server.ftime)))
 server.ftime$ol_time <- data.config_sd$ol_time[match(server.ftime$name,data.config_sd$ip)]
 server.ftime$use_time <- tmp$use_time[match(server.ftime$name,tmp$ip)]
-#1.1. Éú³É·şÒÛÊ±¼ä
+#1.1. ç”Ÿæˆæœå½¹æ—¶é—´
 len <- nrow(server.ftime)
 server.ftime$ftime_ol <- sapply(1:nrow(server.ftime),function(x){
   as.numeric(server.ftime$f_time[[x]] - server.ftime$use_time[x])
   })
-#1.2. Éú³ÉMTBF
+#1.2. ç”ŸæˆMTBF
 server.ftime$mtbf <- sapply(1:nrow(server.ftime),function(x){
   tmp1 <- server.ftime$ftime_ol[[x]]
   tmp1[2:length(tmp1)] - tmp1[1:(length(tmp1)-1)]
 })
-#1.3. ÅĞ¶ÏÊÇ·ñÓĞ¶à´Î¹ÊÕÏ
+#1.3. åˆ¤æ–­æ˜¯å¦æœ‰å¤šæ¬¡æ•…éšœ
 server.ftime$mtbfc <- sapply(1:nrow(server.ftime),function(x){
   tmp2 <- server.ftime$mtbf[[x]]
   !is.na(tmp2[1])
 })
-# 1.4. µÚÒ»´Î¹ÊÕÏÊ±·şÒÛÊ±¼ä
+# 1.4. ç¬¬ä¸€æ¬¡æ•…éšœæ—¶æœå½¹æ—¶é—´
 server.ftime$first_fol <- sapply(1:len,function(x){
   server.ftime$ftime_ol[[x]][1]
 })
-# 1.5. ¹ÊÕÏ´ÎÊı
+# 1.5. æ•…éšœæ¬¡æ•°
 server.ftime$count <- sapply(1:len,function(x){
   length(server.ftime$ftime[[x]])
 })
 
-# 2.1. ÌáÈ¡¶à´Î¹ÊÕÏ»úÆ÷µÄÊı¾İ
+# 2.1. æå–å¤šæ¬¡æ•…éšœæœºå™¨çš„æ•°æ®
 server.ftimem <- subset(server.ftime,mtbfc == T)
 lenm <- nrow(server.ftimem)
-# 2.2. ¹ÊÕÏ´ÎÊı
+# 2.2. æ•…éšœæ¬¡æ•°
 server.ftimem$count <- sapply(1:lenm,function(x){
   length(server.ftimem$mtbf[[x]]) + 1
 })
-# 2.3. Æ½¾ùmtbf
+# 2.3. å¹³å‡mtbf
 server.ftimem$mtbf_mean <- server.ftimem$mtbf
 server.ftimem$mtbf_mean <- sapply(1:lenm,function(x){
   mean(server.ftimem$mtbf[[x]])
 })
-# 2.4. mtbf·½²î
+# 2.4. mtbfæ–¹å·®
 server.ftimem$mtbf_var <- sapply(1:lenm,function(x){
   var(server.ftimem$mtbf[[x]])
 })
 server.ftimem$mtbf_var[is.na(server.ftimem$mtbf_var)] <- 0
 
-#3. »úĞÍ±ê¼Ç
+#3. æœºå‹æ ‡è®°
 data.config_sd$class[data.config_sd$dev_class_id %in% c('TS4','TS6')] <- 'TS'
 data.config_sd$class[data.config_sd$dev_class_id %in% c('B5','B6')] <- 'B'
 data.config_sd$class[data.config_sd$dev_class_id %in% c('A1','A5')] <- 'A'
 data.config_sd$class[data.config_sd$dev_class_id %in% c('C1','X2')] <- 'C'
 server.ftimem$class <- data.config_sd$class[match(server.ftimem$name,
                                                   data.config_sd$ip)]
-# 4. ×÷Í¼
+# 4. ä½œå›¾
 
-# ×÷Í¼: ¹ÊÕÏ´ÎÊıÓëÆ½¾ùmtbf
+# ä½œå›¾: æ•…éšœæ¬¡æ•°ä¸å¹³å‡mtbf
 ggplot(server.ftimem,aes(x = count,y = mtbf_mean,color = class)) + geom_point()
-# ×÷Í¼: µÚÒ»´Î¹ÊÕÏÊ±·şÒÛÊ±¼äÓëÆ½¾ùmtbf
+# ä½œå›¾: ç¬¬ä¸€æ¬¡æ•…éšœæ—¶æœå½¹æ—¶é—´ä¸å¹³å‡mtbf
 ggplot(server.ftimem,aes(x = first_fol,y = mtbf_mean,color = class)) + geom_point()
-# ×÷Í¼: µÚÒ»´Î¹ÊÕÏÊ±·şÒÛÊ±¼äÓë¹ÊÕÏ´ÎÊı
+# ä½œå›¾: ç¬¬ä¸€æ¬¡æ•…éšœæ—¶æœå½¹æ—¶é—´ä¸æ•…éšœæ¬¡æ•°
 ggplot(server.ftimem,aes(x = first_fol,y = count,color = class)) + geom_point()
-# ×÷Í¼: ¸÷»úĞÍ¹ÊÕÏ´ÎÊı
+# ä½œå›¾: å„æœºå‹æ•…éšœæ¬¡æ•°
 ggplot(data.config_sd,aes(x = factor(dev_class_id),fill = (ol_time_fail != -1))) + geom_histogram()
-# ×÷Í¼: µÚÒ»´Î¹ÊÕÏÊ±·şÒÛÊ±¼ä·Ö²¼
+# ä½œå›¾: ç¬¬ä¸€æ¬¡æ•…éšœæ—¶æœå½¹æ—¶é—´åˆ†å¸ƒ
 ggplot(server.ftime,aes(x = round(first_fol))) + geom_histogram(binwidth = 30)
-# ×÷Í¼: ¶à´Î¹ÊÕÏ»úÆ÷µÄ»»ÅÌ´ÎÊı,»»ÅÌÊ±Æ½¾ù·şÒÛÊ±¼ä,»»ÅÌÊ±·şÒÛÊ±¼ä·½²î
+# ä½œå›¾: å¤šæ¬¡æ•…éšœæœºå™¨çš„æ¢ç›˜æ¬¡æ•°,æ¢ç›˜æ—¶å¹³å‡æœå½¹æ—¶é—´,æ¢ç›˜æ—¶æœå½¹æ—¶é—´æ–¹å·®
 ggplot(server.ftimem,aes(x = mtbf_mean, y = mtbf_var, color = count)) + geom_point()

@@ -7,7 +7,7 @@ dir_data <- 'D:/Data/Disk Number'
 load(file.path(dir_data,'data_mcf.Rda'))
 
 mcf_age <- function(data.mcf,time_interval){
-  # Ô­Ê¼µÄtime_intervalÊÇ1Ìì
+  # åŸå§‹çš„time_intervalæ˜¯1å¤©
   data.mcf$ol_time_fail <- round(data.mcf$ol_time_fail/time_interval)
   data.mcf$start <- round(data.mcf$start/time_interval)
   data.mcf$end <- round(data.mcf$end/time_interval)

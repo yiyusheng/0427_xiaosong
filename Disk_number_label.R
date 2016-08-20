@@ -59,7 +59,7 @@ dir_data <- 'D:/Data/Disk Number'
 # disk <- rbind(diskA,diskB)
 # disk <- disk[!duplicated(disk['ip']),]
 # save(cmdb,disk,diskBModel,disk_model,file = file.path(dir_data,'disk_cmdb.Rda'))
-# diskÊÇÒ»¸öipÒ»ÐÐ,disk_modelÊÇÒ»¸ö(ip,model)Ò»ÐÐ.
+# diskæ˜¯ä¸€ä¸ªipä¸€è¡Œ,disk_modelæ˜¯ä¸€ä¸ª(ip,model)ä¸€è¡Œ.
 ###################################################################################
 # #@@@ plot attribute and disk num
 # load(file.path(dir_data,'output','disk_number_label.Rda'))
@@ -91,7 +91,7 @@ dir_data <- 'D:/Data/Disk Number'
 # cmdb.simple <- merge(cmdb.simple,disk,by = 'ip',all.x = T)
 # cmdb.simple$disknum[is.na(cmdb.simple$disknum)] <- 0
 # 
-# #×÷Í¼: ²»Í¬»úÐÍµÄÓ²ÅÌÊý
+# #ä½œå›¾: ä¸åŒæœºåž‹çš„ç¡¬ç›˜æ•°
 # table.dev <- sort(table(cmdb.simple$dev_class_id),decreasing = T)
 # reserve.dev <- names(table.dev)[table.dev > 10000]
 # cmdb.dev <- cmdb.simple[is.element(cmdb.simple$dev_class_id,reserve.dev),]
@@ -104,7 +104,7 @@ dir_data <- 'D:/Data/Disk Number'
 # geom_histogram(geo_aes,position = 'fill') +
 # ggtitle(attr)
 # 
-# #ÅÌÊýÉÙÓÚ12µÄTS4/TS6/TS8ÊÇ·ñ·¢Éú¹ý¹ÊÕÏ.
+# #ç›˜æ•°å°‘äºŽ12çš„TS4/TS6/TS8æ˜¯å¦å‘ç”Ÿè¿‡æ•…éšœ.
 # cmdb.TS <- cmdb.dev[is.element(cmdb.dev$dev_class_id,c('TS4','TS6','TS8')) 
 #                     & as.numeric(as.character(cmdb.dev$disknum)) < 12,]
 # cmdb.allTS <- cmdb[is.element(cmdb$dev_class_id,c('TS4','TS6','TS8')),]
@@ -112,21 +112,21 @@ dir_data <- 'D:/Data/Disk Number'
 # data_bad.TS <- data_bad[is.element(data_bad$ip,cmdb.allTS$ip),]
 # inter.TS <- intersect(data_bad.TS$ip,cmdb.TS$ip)
 # 
-# #Ã¿¸ö»úÐÍÖÐÓÐ±ê¼ÇºÍÎÞ±ê¼ÇµÄÕ¼±ÈÍ³¼Æ
+# #æ¯ä¸ªæœºåž‹ä¸­æœ‰æ ‡è®°å’Œæ— æ ‡è®°çš„å æ¯”ç»Ÿè®¡
 # labeled.dev <- sort(tapply(cmdb.simple$disknum,
 #                       factor(cmdb.simple$dev_class_id),function(x)sum(x == 0)/length(x)),decreasing = F)
 # tmp <- data.frame(x = names(labeled.dev), y = as.numeric(labeled.dev))
 # ggplot(tmp) + geom_bar(aes(x = y))
 # 
-# #SMARTÖÐÓÐSSD»úÐÍµÄdisk modelÍ³¼Æ
+# #SMARTä¸­æœ‰SSDæœºåž‹çš„disk modelç»Ÿè®¡
 # load(file.path(dir_data,'output','disk_number_label.Rda'))
 # tmp <- sort(table(diskBModel$model),decreasing = T)
 # table.model <- data.frame(name = names(tmp),count = as.numeric(tmp))
 # table.model_intel <- subset(table.model,grepl('INTEL',name) | grepl('SSD',name))
 # sum.ssd <- sum(table.model_intel$count)
 
-#ÁªºÏdev_class_name,RAID,model_name¶Ôdisk num½øÐÐ·ÖÎö.
-#Çó³öÃ¿Ò»¸öÀàÐÍÖÐÓÐ¶àÉÙÖÖÅÌÊýÒÔ¼°×î¸ßÄÇÒ»ÖÖÅÌÊýµÄÕ¼±È
+#è”åˆdev_class_name,RAID,model_nameå¯¹disk numè¿›è¡Œåˆ†æž.
+#æ±‚å‡ºæ¯ä¸€ä¸ªç±»åž‹ä¸­æœ‰å¤šå°‘ç§ç›˜æ•°ä»¥åŠæœ€é«˜é‚£ä¸€ç§ç›˜æ•°çš„å æ¯”
 # cmdb <- read.csv(file.path(dir_data,'cmdb1104_allattr.csv'))
 # cmdb.disk <- merge(cmdb,disk,by = 'ip',all.y = T)
 # cmdb.disk$drm <- factor(paste(cmdb.disk$dev_class_id,cmdb.disk$raid,cmdb.disk$model_name))
@@ -190,7 +190,7 @@ dir_data <- 'D:/Data/Disk Number'
 # cmdb.TS4 <- subset(cmdb.disk,dev_class_id == 'TS4' & model_name == 'HUAWEI RH2285' & raid == 'NORAID' & disknum != 12)
 # # write.csv(cmdb.TS4,file = file.path(dir_data,'cmdb_TS4.csv'))
 # 
-# #ÕÒ³öÄÄÐ©»úÐÍÔÚdiskBModelÖÐÓÐÊý¾Ý,ÄÄÐ©»úÐÍÍêÈ«Ã»ÓÐÊý¾Ý
+# #æ‰¾å‡ºå“ªäº›æœºåž‹åœ¨diskBModelä¸­æœ‰æ•°æ®,å“ªäº›æœºåž‹å®Œå…¨æ²¡æœ‰æ•°æ®
 # table.dev <- table(cmdb$dev_class_id)
 # cmdb.model <- merge(cmdb,disk,by = 'ip',all.x = T)
 # cmdb.model$disknum[!is.na(cmdb.model$disknum)] <- 1
@@ -199,7 +199,7 @@ dir_data <- 'D:/Data/Disk Number'
 # require(ggplot2)
 # ggplot(cmdb.model) + geom_bar(aes(x = dev_class_id, fill = disknum))
 # 
-# #²é¿´ÄÄÐ©»úÐÍÓÐÈÝÁ¿Êý¾Ý
+# #æŸ¥çœ‹å“ªäº›æœºåž‹æœ‰å®¹é‡æ•°æ®
 # load(file.path(dir_data,'alldata.Rda'))
 # cmdb <- read.csv(file.path(dir_data,'cmdb.Rda'))
 # data_capacity <- data_all[!duplicated(data_all$ip),]
@@ -220,8 +220,8 @@ dir_data <- 'D:/Data/Disk Number'
 # a <- tapply(diskBModel$ip,diskBModel$ip,length)
 # a <- tapply(diskBModel$model,diskBModel$ip,length(unique))
 ###################################################################################
-#@@@ ¸øCMDBÊý¾ÝÌí¼ÓDISK MODELÐÅÏ¢
-# 1. ¸ødisk modelÌí¼ÓÈÝÁ¿,ÊýÁ¿µÈÐÅÏ¢
+#@@@ ç»™CMDBæ•°æ®æ·»åŠ DISK MODELä¿¡æ¯
+# 1. ç»™disk modelæ·»åŠ å®¹é‡,æ•°é‡ç­‰ä¿¡æ¯
 load(file.path(dir_data,'disk_cmdb.Rda'))
 model_info <- read.csv(file.path(dir_data,'num_model.csv'))
 model_info <- model_info[!duplicated(model_info$Model_clear),]
@@ -233,7 +233,7 @@ disk_model$Model_ori <- NULL
 disk_model$Discs <- disk_model$Discs*disk_model$number
 disk_model$Heads <- disk_model$Heads*disk_model$number
 
-# 2. ÎªÓÐdisk modelµÄip½¨Á¢µÄ±í
+# 2. ä¸ºæœ‰disk modelçš„ipå»ºç«‹çš„è¡¨
 disk_model$interface <- as.character(disk_model$interface)
 disk_model$interface[disk_model$interface == 'SATA 3Gb/s'] <- 'SATA2'
 disk_model$interface[disk_model$interface == 'SATA 6Gb/s'] <- 'SATA3'
@@ -255,10 +255,10 @@ disk_ip <- disk_ip[!is.na(disk_ip$total),]
 row.names(disk_ip) <- NULL
 
 
-# 3. µ¼Èë¹ÊÕÏÊý¾Ý²¢´æ´¢
+# 3. å¯¼å…¥æ•…éšœæ•°æ®å¹¶å­˜å‚¨
 load(file.path(dir_data,'flist.Rda'))
 save(disk_ip,data.flist,cmdb,file = file.path(dir_data,'disk_number_label.Rda'))
-# 3. load failure list from uwork and flist (ÀÏ°æ±¾,Ö»°ÑµÚÒ»´Î¹ÊÕÏ×÷Îª¹ÊÕÏ,¹ýÂËºóÃæËùÓÐ¹ÊÕÏ)
+# 3. load failure list from uwork and flist (è€ç‰ˆæœ¬,åªæŠŠç¬¬ä¸€æ¬¡æ•…éšœä½œä¸ºæ•…éšœ,è¿‡æ»¤åŽé¢æ‰€æœ‰æ•…éšœ)
 # load('D:/Data/Disk Number/flist(uwork[2012-2014]).Rda')
 # data.flist_uwork <- data.flist
 # data.flist_uwork <- data.flist_uwork[data.flist_uwork$class>6,c('ip','svr_id','f_time','class','fcount')]
@@ -327,7 +327,7 @@ save(disk_ip,data.flist,cmdb,file = file.path(dir_data,'disk_number_label.Rda'))
 # #   entropy_order[j,6:10] <- as.character(tmp$value[1:5])
 # }
 # # entropy_order <- entropy_order[order(entropy_order$X6),]
-# #ÕÒ³öentropyÐ¡ÓÚ0.1µÄA,B¶Ô
+# #æ‰¾å‡ºentropyå°äºŽ0.1çš„A,Bå¯¹
 # bool <- condi_entropy_limit <= 0.1
 # len.bool <- sum(bool)
 # entropy_info <- data.frame()

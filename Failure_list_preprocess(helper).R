@@ -1,4 +1,4 @@
-#@@@ ¶ÁÈ¡helperÊı¾İ²¢½øĞĞ¼òÒª·ÖÎö
+#@@@ è¯»å–helperæ•°æ®å¹¶è¿›è¡Œç®€è¦åˆ†æ
 rm(list = ls())
 dir_data <- 'D:/Data/Disk Number/'
 require(ggplot2)
@@ -13,10 +13,10 @@ require(ggplot2)
 load(file.path(dir_data,'helper[09-13].Rda'))
 
 # 1. extract some column and filter replica list
-col_need <- c('´´½¨Ê±¼ä','¹ÊÕÏÔ­Òò','µ±Ç°×´Ì¬','¹ÊÕÏ·¢Éú²¿ÃÅ','²¿ÃÅ','·şÎñ»Ö¸´Ê±¼ä','½áµ¥Ê±¼ä',
-              '½â¾ö·½·¨','¹Ì×Ê±àºÅ','¹ÊÕÏ»ú¹Ì×ÊºÅ','Ö÷»úIP','¸æ¾¯¼¶±ğ','Éè±¸ĞÍºÅ','Éè±¸ÀàĞÍ',
-              'SN','ÉÏ¼ÜÊ±¼ä','·şÎñ»Ö¸´ºÄÊ±.Ğ¡Ê±.','ÊÂ¼şÀàĞÍ','Ó²ÅÌ¹ÊÕÏÀàĞÍ','Ó²ÅÌ¹ÊÕÏÊıÁ¿',
-              'Ó²ÅÌÈİÁ¿','Ó²ÅÌÉú²ú³§ÉÌ','Ó²ÅÌÆ·ÅÆ³§ÉÌ','±¸»ú¹Ì×ÊºÅ')
+col_need <- c('åˆ›å»ºæ—¶é—´','æ•…éšœåŸå› ','å½“å‰çŠ¶æ€','æ•…éšœå‘ç”Ÿéƒ¨é—¨','éƒ¨é—¨','æœåŠ¡æ¢å¤æ—¶é—´','ç»“å•æ—¶é—´',
+              'è§£å†³æ–¹æ³•','å›ºèµ„ç¼–å·','æ•…éšœæœºå›ºèµ„å·','ä¸»æœºIP','å‘Šè­¦çº§åˆ«','è®¾å¤‡å‹å·','è®¾å¤‡ç±»å‹',
+              'SN','ä¸Šæ¶æ—¶é—´','æœåŠ¡æ¢å¤è€—æ—¶.å°æ—¶.','äº‹ä»¶ç±»å‹','ç¡¬ç›˜æ•…éšœç±»å‹','ç¡¬ç›˜æ•…éšœæ•°é‡',
+              'ç¡¬ç›˜å®¹é‡','ç¡¬ç›˜ç”Ÿäº§å‚å•†','ç¡¬ç›˜å“ç‰Œå‚å•†','å¤‡æœºå›ºèµ„å·')
 data <- data[,col_need]
 names(data) <- c('f_time','reason','state','fail_dept','dept','recover_time','close_time',
                  'solution','svr_id','svr_id_failure','ip','level','model_name','dev_class_id',
@@ -24,32 +24,32 @@ names(data) <- c('f_time','reason','state','fail_dept','dept','recover_time','cl
                  'disk_capacity','disk_vendor','disk_band_vendor','svr_id_backup')
 data <- subset(data,as.numeric(state) != 1 & as.numeric(state) != 4)
 
-# 2. ²âÊÔ²¿ÃÅºÅ,svr_idÊÇ·ñÒ»ÖÂ
+# 2. æµ‹è¯•éƒ¨é—¨å·,svr_idæ˜¯å¦ä¸€è‡´
 # sum(as.character(data$dept) == as.character(data$fail_dept))
-# #É¾³ı²¿ÃÅÁĞ
+# #åˆ é™¤éƒ¨é—¨åˆ—
 # data$dept <- NULL
 # sum(as.character(data$svr_id) == as.character(data$svr_id_failure))
-# #É¾³ı¹ÊÕÏ»ú¹Ì×ÊºÅ
+# #åˆ é™¤æ•…éšœæœºå›ºèµ„å·
 # data$svr_id_failure <- NULL
 
-# 3. Ñ¡È¡ÅĞ¶Ï»úÆ÷ÊÇ·ñ»»ÅÌ×Ö¶Î(solution,type,disk_failure_type)
+# 3. é€‰å–åˆ¤æ–­æœºå™¨æ˜¯å¦æ¢ç›˜å­—æ®µ(solution,type,disk_failure_type)
 # ggplot(data,aes(x = disk_failure_type,fill = type)) + geom_histogram()
 # table(data[as.numeric(data$disk_failure_count) != 1,'type'])
 # # solution
-# idx.solution <- sapply(data$solution,function(x) grepl('¸ü»»Ó²ÅÌ',x))
+# idx.solution <- sapply(data$solution,function(x) grepl('æ›´æ¢ç¡¬ç›˜',x))
 # data.solution <- data
 # data.solution$solbool <- 0
 # data.solution$solbool[idx.solution] <- 1
 # # type & disk_faulure_type
 # table(data.solution[data.solution$solbool == 1,'disk_failure_type'])
-#½áÂÛ: Ê¹ÓÃdisk_failure_typeÀ´±êÊ¶»»ÁËµÄÅÌ.
+#ç»“è®º: ä½¿ç”¨disk_failure_typeæ¥æ ‡è¯†æ¢äº†çš„ç›˜.
 
-# 4.¹ıÂËIP
+# 4.è¿‡æ»¤IP
 data.filter <- data[with(data,order(ip,f_time)),]
 #replace wrong string
-data.filter$ip <- gsub("ÎŞ", "", data.filter$ip)
+data.filter$ip <- gsub("æ— ", "", data.filter$ip)
 data.filter$ip <- gsub("\n", "", data.filter$ip)
-#delete no ip
+#delete item without ip
 data.filter <- data.filter[data.filter$ip!='',]           # delete no ip
 #remove item with more than one ip
 idx.ip_res <- nchar(as.character(data.filter$ip)) <= 15
@@ -62,20 +62,20 @@ data.filter <- data.filter[idx.ip_reg,]
 #factorize
 data.filter$ip <- factor(data.filter$ip)                    # reconstruct factor of ip
 
-# 5. ¹ıÂËf_time,use_time,close_time
+# 5. è¿‡æ»¤f_time,use_time,close_time
 # table(nchar(as.character(data.filter$f_time)))
 # table(nchar(as.character(data.filter$use_time)))
 # table(nchar(as.character(data.filter$close_time)))
-data.filter$use_time <- gsub("ÎŞ", "", data.filter$use_time)
+data.filter$use_time <- gsub("æ— ", "", data.filter$use_time)
 data.filter$use_time <- gsub("\n", "", data.filter$use_time)
 data.filter$use_time <- as.POSIXct(data.filter$use_time,tz = 'UTC')
 data.filter$f_time <- as.POSIXct(data.filter$f_time,tz = 'UTC')
 # data.filter$close_time <- as.POSIXct(data.filter$close_time,tz = 'UTC')
 
-# 6.add class ((·ÇÓ²ÅÌ¹ÊÕÏµÄÀàĞÍÎª-1,Ó²ÅÌ¹ÊÕÏµÄÀàĞÍÎª13(µ¥Ó²ÅÌ¹ÊÕÏ),14(¶àÓ²ÅÌ¹ÊÕÏ))
+# 6.add class ((éç¡¬ç›˜æ•…éšœçš„ç±»å‹ä¸º-1,ç¡¬ç›˜æ•…éšœçš„ç±»å‹ä¸º13(å•ç¡¬ç›˜æ•…éšœ),14(å¤šç¡¬ç›˜æ•…éšœ))
 data.filter$class <- -1
-data.filter$class[as.character(data.filter$disk_failure_type) == 'µ¥Ó²ÅÌ¹ÊÕÏ'] <- 13
-data.filter$class[as.character(data.filter$disk_failure_type) == '¶àÓ²ÅÌ¹ÊÕÏ'] <- 14
+data.filter$class[as.character(data.filter$disk_failure_type) == 'å•ç¡¬ç›˜æ•…éšœ'] <- 13
+data.filter$class[as.character(data.filter$disk_failure_type) == 'å¤šç¡¬ç›˜æ•…éšœ'] <- 14
 
 # 6. duplication: ip
 # fcount <- tapply(data.filter$ip,data.filter$ip,length)

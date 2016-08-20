@@ -1,4 +1,4 @@
-# ÁøÓÀ¿µµÄÊµÑé½á¹û×÷Í¼,Êı¾İÀ´×ÔÆä±ÏÒµÂÛÎÄ
+# æŸ³æ°¸åº·çš„å®éªŒç»“æœä½œå›¾,æ•°æ®æ¥è‡ªå…¶æ¯•ä¸šè®ºæ–‡
 rm(list = ls())
 require(ggplot2)
 library(scales)
@@ -11,7 +11,7 @@ failure_predict <- data.frame(precision = x[order(x)],recall = y[order(y)])
 p1 <- ggplot(failure_predict,aes(x = recall,y = precision)) + 
   geom_line(size = 1.5) +
   geom_point(size = 4, shape = 21, fill = 'white') +
-  ggtitle('Ó²ÅÌ¹ÊÕÏÔ¤²â') + 
+  ggtitle('ç¡¬ç›˜æ•…éšœé¢„æµ‹') + 
   scale_y_continuous(labels = percent) +scale_x_continuous(labels = percent) +
   xlab('FAR') + ylab('FDR') +
   theme(axis.text.x = element_text(colour="grey20",size=20,angle=0,hjust=.5,vjust=.5,face="plain"),
@@ -20,7 +20,7 @@ p1 <- ggplot(failure_predict,aes(x = recall,y = precision)) +
         axis.title.y = element_text(colour="black",size=20,angle=0,hjust=.5,vjust=.5,face="plain"),
         title = element_text(colour="black",size=20,angle=0,hjust=.5,vjust=1,face="plain"))
 
-ggsave(file=file.path(dir_data,'disk failure prediction','Ó²ÅÌ¹ÊÕÏÔ¤²â.png'), 
+ggsave(file=file.path(dir_data,'disk failure prediction','ç¡¬ç›˜æ•…éšœé¢„æµ‹.png'), 
        plot=p1, width = 12, height = 9, dpi = 100)
 
 # time prediction
@@ -30,7 +30,7 @@ failure_predict <- data.frame(precision = x,recall = y)
 p2 <- ggplot(failure_predict,aes(x = recall,y = precision)) + 
   geom_line(size = 1.5) +
   geom_point(size = 4, shape = 21, fill = 'white') +
-  ggtitle('¹ÊÕÏÊ±¼äÔ¤²â(5Ìì)') + 
+  ggtitle('æ•…éšœæ—¶é—´é¢„æµ‹(5å¤©)') + 
   scale_y_continuous(labels = percent) +scale_x_continuous(labels = percent) +
   xlab('FAR') + ylab('FDR') +
   theme(axis.text.x = element_text(colour="grey20",size=20,angle=0,hjust=.5,vjust=.5,face="plain"),
@@ -40,5 +40,5 @@ p2 <- ggplot(failure_predict,aes(x = recall,y = precision)) +
         title = element_text(colour="black",size=20,angle=0,hjust=.5,vjust=1,face="plain"))
 
 
-ggsave(file=file.path(dir_data,'disk failure prediction','¹ÊÕÏÊ±¼äÔ¤²â(5Ìì).png'), 
+ggsave(file=file.path(dir_data,'disk failure prediction','æ•…éšœæ—¶é—´é¢„æµ‹(5å¤©).png'), 
        plot=p2, width = 12, height = 9, dpi = 100)

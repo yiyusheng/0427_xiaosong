@@ -1,47 +1,47 @@
 # MCF function
 require(scales)
 ##########################################
-#@@@ º¯Êý
-# 1. MCFËã·¨(AGE).
+#@@@ å‡½æ•°
+# 1. MCFç®—æ³•(AGE).
 mcf_age <- function(data.mcf,time_interval){
-  # Ô­Ê¼µÄtime_intervalÊÇ1Ìì
+  # åŽŸå§‹çš„time_intervalæ˜¯1å¤©
   data.mcf$ol_time_fail <- round(data.mcf$ol_time_fail/time_interval)
   data.mcf$start <- round(data.mcf$start/time_interval)
   data.mcf$end <- round(data.mcf$end/time_interval)
   table.ol_time_fail <- table(data.mcf$ol_time_fail)
   table.ol_time_fail <- table.ol_time_fail[2:length(table.ol_time_fail)]
   tmp <- names(table.ol_time_fail)
-  # 1. Ê±¼äÓë¹ÊÕÏ»úÆ÷Êý
+  # 1. æ—¶é—´ä¸Žæ•…éšœæœºå™¨æ•°
   mcf <- data.frame(time = as.numeric(names(table.ol_time_fail)),
                     fails = as.numeric(table.ol_time_fail))
-  # 2. ÔÚÏß»úÆ÷Êý(ÒòÎª¹ÊÕÏ»úÆ÷ÊÇÓÐÖØ¸´µÄ,Òª°ÑÕâ²¿·ÖÖØ¸´È¥µô)
+  # 2. åœ¨çº¿æœºå™¨æ•°(å› ä¸ºæ•…éšœæœºå™¨æ˜¯æœ‰é‡å¤çš„,è¦æŠŠè¿™éƒ¨åˆ†é‡å¤åŽ»æŽ‰)
   tmp <- subset(data.mcf,dup == T)
   mcf$atrisk <- sapply(mcf$time,function(x){
     tmp1 <- subset(tmp,start < x & end >= x)
     sum(tmp1$disk_cNew)
 #     nrow(tmp1)
   })
-  # 3. ¹ØÓÚÊ±¼äµÄ¹ÊÕÏÂÊ
+  # 3. å…³äºŽæ—¶é—´çš„æ•…éšœçŽ‡
   mcf$errorrate_pertime <- mcf$fails/mcf$atrisk
-  # 4. MCF¼ÆËã
+  # 4. MCFè®¡ç®—
   mcf$mcf <- sapply(1:nrow(mcf),function(x){
     sum(mcf$errorrate_pertime[1:x])
   })
-  # 5. RR ¼ÆËã
+  # 5. RR è®¡ç®—
   len <- nrow(mcf)
   diff <- (mcf$mcf[2:len] - mcf$mcf[1:(len-1)])/(mcf$time[2:len] - mcf$time[1:(len-1)])
   diff <- c(0,diff)
   mcf$rr <- diff
-  # 6. ¼ÆËãÔÚÏß»úÆ÷ÊýÕ¼×î´óÔÚÏß»úÆ÷ÊýµÄ±ÈÀýÓÃÓÚ¹ýÂË
+  # 6. è®¡ç®—åœ¨çº¿æœºå™¨æ•°å æœ€å¤§åœ¨çº¿æœºå™¨æ•°çš„æ¯”ä¾‹ç”¨äºŽè¿‡æ»¤
   mcf$frac_max <- mcf$atrisk/max(mcf$atrisk)
-  # 7. Ìí¼Óstand_mcfÁÐ,ÎªÁË¿ÉÒÔrbind
+  # 7. æ·»åŠ stand_mcfåˆ—,ä¸ºäº†å¯ä»¥rbind
   mcf$stand_mcf <- 0
   return(mcf)
 }
 
-# 2. MCFËã·¨(CALENDAR)
+# 2. MCFç®—æ³•(CALENDAR)
 mcf_cal <- function(data.mcf,time_interval) {
-  # Ô­Ê¼µÄtime_intervalÊÇ1Ìì
+  # åŽŸå§‹çš„time_intervalæ˜¯1å¤©
   data.mcf$ol_time_fail_c <- round(data.mcf$ol_time_fail_c/time_interval)
   data.mcf$start_c <- round(data.mcf$start_c/time_interval)
   data.mcf$end_c <- round(data.mcf$end_c/time_interval)
@@ -64,18 +64,18 @@ mcf_cal <- function(data.mcf,time_interval) {
   return(mcf)
 }
 
-# 3. ×÷Í¼²¢±£´æ.¼ÓÈëÏà¶Ô±ÈÀý¼ÆËã
+# 3. ä½œå›¾å¹¶ä¿å­˜.åŠ å…¥ç›¸å¯¹æ¯”ä¾‹è®¡ç®—
 mcf_plot <- function(mcf,time_limit,prefix,frac_m,title) {
   line_size = 2
-  # 1. Ê±¼ä¹ýÂË&°´±ÈÀý¹ýÂË
-  # Ê±¼ä´¦Àí
+  # 1. æ—¶é—´è¿‡æ»¤&æŒ‰æ¯”ä¾‹è¿‡æ»¤
+  # æ—¶é—´å¤„ç†
   if (time_limit == -1){
     time_limit <- max(mcf$time)
   }
   mcf_p <- subset(mcf,time <= time_limit & 
                     atrisk > 50 & 
                     frac_max > frac_m)
-  # 2. ×÷Í¼
+  # 2. ä½œå›¾
   # 2.1 MCF
   geo_aes <- aes(x = time,y = mcf,group = classNew, color = classNew)
   p1 <- ggplot(mcf_p,geo_aes) + geom_line(size = line_size) + 
@@ -121,7 +121,7 @@ mcf_plot <- function(mcf,time_limit,prefix,frac_m,title) {
           legend.justification = c(0,1),
           legend.background = element_rect(fill = alpha('grey',0.5)))
   
-  # 3. ±£´æ
+  # 3. ä¿å­˜
   ggsave(file=file.path(dir_data,'output','mcf',paste(prefix,'mcf.png',sep='_')), plot=p1, width = 12, height = 9, dpi = 100)
   #   ggsave(file=file.path(dir_data,'output','mcf',paste(prefix,'rate.png',sep='_')), plot=p2, width = 12, height = 9, dpi = 100)
   #   ggsave(file=file.path(dir_data,'output','mcf',paste(prefix,'fails.png',sep='_')), plot=p3, width = 12, height = 9, dpi = 100)
@@ -131,7 +131,7 @@ mcf_plot <- function(mcf,time_limit,prefix,frac_m,title) {
   return(list(p_mcf=p1,p_er=p2,p_fail=p3,p_risk=p4,p_rr=p5,p_sm=p6))
 }
 
-# 4. Ïà¶Ô±ÈÀý¼ÆËã: ¸ù¾ÝclassÈ·¶¨Ò»ÌõÏßÎª±ê×¼Ïß,¼ÆËãÆäËüÏß¹ØÓÚÕâÌõÏßµÄ±ÈÀý
+# 4. ç›¸å¯¹æ¯”ä¾‹è®¡ç®—: æ ¹æ®classç¡®å®šä¸€æ¡çº¿ä¸ºæ ‡å‡†çº¿,è®¡ç®—å…¶å®ƒçº¿å…³äºŽè¿™æ¡çº¿çš„æ¯”ä¾‹
 mcf_sc <- function(mcf,stand_class){
   tmp <- subset(mcf,class = stand_class)
   mcf$stand_mcf <- tmp$mcf[match(mcf$time,tmp$time)]
@@ -139,7 +139,7 @@ mcf_sc <- function(mcf,stand_class){
   return(mcf)
 }
 
-# 5. ¼ÆËã²¢ºÏ³ÉËùÓÐÀà±ðµÄMCF
+# 5. è®¡ç®—å¹¶åˆæˆæ‰€æœ‰ç±»åˆ«çš„MCF
 mcf_merge <- function(mcf_item_age,item,item_need,
                       config_item,ti,class_suffix,title){
   for (i in 1:length(item_need)) {

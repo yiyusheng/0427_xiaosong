@@ -1,4 +1,4 @@
-###@ ´¦ÀíĞÂµÄÔÓÂÒµÄÏë·¨
+###@ å¤„ç†æ–°çš„æ‚ä¹±çš„æƒ³æ³•
 rm(list = ls())
 require(ggplot2)
 source('MCF_function.R')
@@ -24,14 +24,14 @@ data.config <- subset(data.config,use_time > as.POSIXct('2010-01-01'))
 data.config <- subset(data.config,dev_class_id %in% dev_need)
 data.config$dev_class_id <- factor(data.config$dev_class_id)
 
-# # 1. 500Gµ¥ÅÌ»úµÄ½Ó¿Ú,modelÓë¹ÊÕÏ¹ØÏµ·ÖÎö(Q3&Q4)
+# # 1. 500Gå•ç›˜æœºçš„æ¥å£,modelä¸æ•…éšœå…³ç³»åˆ†æ(Q3&Q4)
 # tmp1 <- subset(data.config,disk_model == 'ST3500514NS' & disk_c == 1)
 # tmp2 <- subset(data.config,disk_model == 'ST500NM0011' & disk_c == 1)
 # tmp1 <- merge(tmp1,cmdb[c('ip','dev_class_name','model_name','bs1')],by = 'ip',all.x = T)
 # tmp2 <- merge(tmp2,cmdb[c('ip','dev_class_name','model_name','bs1')],by = 'ip',all.x = T)
 # summary(tmp1[,13:15])
 # summary(tmp2[,13:15])
-# #¼ÓÈëmodel_name×÷Í¼
+# #åŠ å…¥model_nameä½œå›¾
 # data.config_model <- merge(subset(data.config,!is.na(total) & disk_c == 1 & total == 500),
 #                            cmdb[c('ip','model_name')],
 #                            by = 'ip',all.x = T)
@@ -55,7 +55,7 @@ data.config$dev_class_id <- factor(data.config$dev_class_id)
 # mcf_item_age_Q234 <- mcf_sc(mcf_item_age,stand_class)
 # eval(parse(text = sprintf('p_%s <- mcf_plot(mcf_item_age_Q234,time_need,title,frac_max,title)',item)))
 # 
-# # 2. ¸÷»úĞÍÓë¹ÊÕÏ¹ØÏµ(Q1)
+# # 2. å„æœºå‹ä¸æ•…éšœå…³ç³»(Q1)
 # item <- 'dev_class'
 # class_suffix <- ''
 # title <- 'Q1_dev'
@@ -74,7 +74,7 @@ data.config$dev_class_id <- factor(data.config$dev_class_id)
 # source('MCF_function.R')
 # eval(parse(text = sprintf('p_%s <- mcf_plot(mcf_item_age_Q1,time_need,title,frac_max,title)',item)))
 # 
-# # 2.1 ¸÷»úĞÍÖĞÅäÖÃµ¥ÓësmartÊı¾İÌáÈ¡µ½µÄÊı¾İ²»Í¬µÄÕ¼±ÈÓĞ¶àÉÙ
+# # 2.1 å„æœºå‹ä¸­é…ç½®å•ä¸smartæ•°æ®æå–åˆ°çš„æ•°æ®ä¸åŒçš„å æ¯”æœ‰å¤šå°‘
 # tmp <- data.config[data.config$dup == T,]
 # tmp1<- subset(tmp,disk_c == disk_cNew & 
 #                 total == totalNew)
@@ -86,11 +86,11 @@ data.config$dev_class_id <- factor(data.config$dev_class_id)
 #                         disk_info = as.numeric(tmp4),
 #                         right = as.numeric(tmp3))
 # 
-# # 2.2 A5ºÍB6µÄ·şÎñÆ÷ĞÍºÅ
+# # 2.2 A5å’ŒB6çš„æœåŠ¡å™¨å‹å·
 # dev_A5 <- subset(cmdb,dev_class_id == 'A5')
 # dev_B6 <- subset(cmdb,dev_class_id == 'B6')
 # 
-# # 2.3 TS5ºÍC1µÄ×ÜÈİÁ¿ÓëÊ±¼äºÍ·şÎñÆ÷ĞÍºÅµÄ¹ØÏµ
+# # 2.3 TS5å’ŒC1çš„æ€»å®¹é‡ä¸æ—¶é—´å’ŒæœåŠ¡å™¨å‹å·çš„å…³ç³»
 # dev <- subset(data.config,dev_class_id %in% c('TS6'))
 # dev$total[is.na(dev$total)] <- -1
 # tmp <- table(factor(dev$total))
@@ -107,7 +107,7 @@ data.config$dev_class_id <- factor(data.config$dev_class_id)
 # 
 # ggplot(cmdb.dev,aes(x = svr_version, fill = factor(total))) + geom_histogram()
 # 
-# # 2.4 C1, TS5, TS3ÓĞ´óÁ¿ÓëÅäÖÃµ¥²»·ûµÄ»úÆ÷ÅäÖÃ,Ô­ÒòÊÇÊ²Ã´
+# # 2.4 C1, TS5, TS3æœ‰å¤§é‡ä¸é…ç½®å•ä¸ç¬¦çš„æœºå™¨é…ç½®,åŸå› æ˜¯ä»€ä¹ˆ
 # col_need <- c('svr_asset_id','dev_class_id','type_name','model_name','ip','dept_id','bs1',
 #               'raid','use_time','svr_version','operator')
 # wrongConf <- subset(data.config,disk_c != disk_cNew | total != totalNew)
@@ -124,7 +124,7 @@ data.config$dev_class_id <- factor(data.config$dev_class_id)
 # wTS5 <- subset(cmdb,ip %in% wTS5$ip,col_need)
 # rTS5 <- subset(cmdb,!(ip %in% wTS5$ip) & dev_class_id == 'TS5',col_need)
 # 
-# # 3. ¼ì²âµ¥ÅÌST1000NM0011¹ÊÕÏÊıÓëÔÚÏßÊı²îÒìÔ­Òò
+# # 3. æ£€æµ‹å•ç›˜ST1000NM0011æ•…éšœæ•°ä¸åœ¨çº¿æ•°å·®å¼‚åŸå› 
 # tmp1 <- subset(data.config,disk_model == 'ST1000NM0011' & 
 #                  disk_c == 1 & 
 #                  ol_time_fail != -1,'ip')
@@ -137,13 +137,13 @@ data.config$dev_class_id <- factor(data.config$dev_class_id)
 # tmp1 <- subset(cmdb,ip %in% tmp1,col_need)
 # tmp2 <- subset(cmdb,ip %in% tmp2,col_need)
 # 
-# # 4.1 ×÷»úĞÍ,¹ÊÕÏ´ÎÊıµÄÍ¼(for Äê»áppt)
+# # 4.1 ä½œæœºå‹,æ•…éšœæ¬¡æ•°çš„å›¾(for å¹´ä¼šppt)
 # data.plot <- data.config
 # data.plot$class <- 'normal'
 # data.plot$class[data.plot$ol_time_fail != -1] <- 'fail'
 # ggplot(data.plot,aes(x = dev_class_id,fill = class)) + geom_histogram()
 # 
-# # 4.2 ×÷Í¼,¹ÊÕÏÊ±¼ä,·şÒÛÊ±¼ä,ÊıÁ¿
+# # 4.2 ä½œå›¾,æ•…éšœæ—¶é—´,æœå½¹æ—¶é—´,æ•°é‡
 # data.plot<- subset(data.config,ol_time_fail != -1,c('ol_time_fail','ol_time'))
 # data.plot$ol_time_fail <- ceiling(data.plot$ol_time_fail/30)
 # data.plot$ol_time <- ceiling(data.plot$ol_time/30)
@@ -157,15 +157,15 @@ data.config$dev_class_id <- factor(data.config$dev_class_id)
 # data.plot$usetime <- as.numeric(levels(b[,2])[b[,1]])
 # ggplot(data.plot,aes(x = usetime,y = ftime,size = count)) + geom_point()
 
-# # 5. ¸÷»úĞÍÓ²ÅÌÉı¼¶Çé¿ö
+# # 5. å„æœºå‹ç¡¬ç›˜å‡çº§æƒ…å†µ
 # # 5.1 C1
 # model_need <- c('ST31000524NS','ST3250310NS','ST1000NM0011','ST500NM0011','ST3500514NS')
 # tmp <- subset(data.config,dev_class_id == 'C1' & disk_model %in% model_need)
 # ggplot(tmp1,aes(x = use_time,fill = disk_model)) + geom_histogram()
 
-# # 6. ²âÊÔÍ¬»úĞÍ,Í¬ÒµÎñ,Í¬model,ÔÚ²»Í¬Ê±¼äÉÏ¼ÜµÄÓ²ÅÌµÄ¹ÊÕÏÇé¿öÊÇ·ñÏà·û[Q0]
+# # 6. æµ‹è¯•åŒæœºå‹,åŒä¸šåŠ¡,åŒmodel,åœ¨ä¸åŒæ—¶é—´ä¸Šæ¶çš„ç¡¬ç›˜çš„æ•…éšœæƒ…å†µæ˜¯å¦ç›¸ç¬¦[Q0]
 # 
-# # 6.1 C1µÄST3500514NSºÍST1000NM0011½øĞĞ²âÊÔ[Q0A]
+# # 6.1 C1çš„ST3500514NSå’ŒST1000NM0011è¿›è¡Œæµ‹è¯•[Q0A]
 # tmp1 <- subset(data.config,dev_class_id == 'C1' & 
 #                  disk_model == 'ST3500514NS' & 
 #                  use_time < as.POSIXct('2011-01-01') &
@@ -191,16 +191,16 @@ data.config$dev_class_id <- factor(data.config$dev_class_id)
 # mcf_item_age_Q0 <- mcf_sc(mcf_item_age,stand_class)
 # eval(parse(text = sprintf('p_%s <- mcf_plot(mcf_item_age_Q0,time_need,title,frac_max,title)',item)))
 # 
-# # 6.2 ¶ÔËÄÀà»úÆ÷+ÒµÎñ»úÆ÷½øĞĞ²âÊÔºÍ·ÖÊ±¶ÎÇóMCF[Q0B]
+# # 6.2 å¯¹å››ç±»æœºå™¨+ä¸šåŠ¡æœºå™¨è¿›è¡Œæµ‹è¯•å’Œåˆ†æ—¶æ®µæ±‚MCF[Q0B]
 # data.config$bs1 <- cmdb_dev$bs1[match(data.config$ip,cmdb_dev$ip)]
 # data.config$dev_bs <- paste(data.config$dev_class_id,data.config$bs1,sep='_')
 # # a <- data.frame(sort(table(data.config$dev_bs),decreasing = T))
-# # tmp1 <- subset(data.config,dev_class_id == 'TS4' & bs1 == '[SNG][QQÏà²á]' & disk_model %in% c('ST1000NM0011','ST31000524NS'))
+# # tmp1 <- subset(data.config,dev_class_id == 'TS4' & bs1 == '[SNG][QQç›¸å†Œ]' & disk_model %in% c('ST1000NM0011','ST31000524NS'))
 # m <- c('ST31000524NS','ST1000NM0011','ST31000524NS','ST1000NM0011',
 #        'ST2000NM0011','ST32000645NS','ST2000NM0011','ST32000645NS')
 # d <- c('TS4','TS4','TS4','TS4','TS5','TS5','TS6','TS6')
-# b <- c('[SNG][QQÏà²á]','[SNG][QQÏà²á]','[TEG][´óÎÄ¼şFTN]','[TEG][´óÎÄ¼şFTN]',
-#        'Êı¾İ²Ö¿â','Êı¾İ²Ö¿â','[SNG][QQÏà²á]','[SNG][QQÏà²á]')
+# b <- c('[SNG][QQç›¸å†Œ]','[SNG][QQç›¸å†Œ]','[TEG][å¤§æ–‡ä»¶FTN]','[TEG][å¤§æ–‡ä»¶FTN]',
+#        'æ•°æ®ä»“åº“','æ•°æ®ä»“åº“','[SNG][QQç›¸å†Œ]','[SNG][QQç›¸å†Œ]')
 # time <- list(c(as.POSIXct('2010-07-01'),as.POSIXct('2011-01-01'),as.POSIXct('2011-07-01'),as.POSIXct('2012-01-01')),
 #           c(as.POSIXct('2011-07-01'),as.POSIXct('2012-01-01'),as.POSIXct('2012-08-01')),
 #           c(as.POSIXct('2010-07-01'),as.POSIXct('2011-01-01'),as.POSIXct('2011-07-01'),as.POSIXct('2012-01-01')),
@@ -240,10 +240,10 @@ data.config$dev_class_id <- factor(data.config$dev_class_id)
 #   eval(parse(text = sprintf('p_%s <- mcf_plot(mcf_item_age_Q0B,time_need,title,frac_max,title)',item))) 
 # }
 
-# # 7. ·ÖÎö[SNG][QQÏà²á]ÔÚ²»Í¬»úĞÍ(C1,TS4,TS6)ÖĞµÄMCFÒÔÃèÊö²»Í¬µÄdisk model¶Ô¶àÅÌ»úµÄÓ°Ïì
+# # 7. åˆ†æ[SNG][QQç›¸å†Œ]åœ¨ä¸åŒæœºå‹(C1,TS4,TS6)ä¸­çš„MCFä»¥æè¿°ä¸åŒçš„disk modelå¯¹å¤šç›˜æœºçš„å½±å“
 # data.config$dev_bs <- paste(data.config$dev_class_id,data.config$bs1,sep='_')
-# tmp0 <- subset(data.config,bs1 == '[SNG][QQÏà²á]' & dup == T)
-# tmp <- subset(data.config,bs1 == '[SNG][QQÏà²á]' & dev_class_id %in% c('TS4','TS6','C1'))
+# tmp0 <- subset(data.config,bs1 == '[SNG][QQç›¸å†Œ]' & dup == T)
+# tmp <- subset(data.config,bs1 == '[SNG][QQç›¸å†Œ]' & dev_class_id %in% c('TS4','TS6','C1'))
 # tmp$dev_model <- paste(tmp$dev_class_id,tmp$disk_model,sep = '_')
 # # dm_need <- c('TS4_ST31000524NS','TS6_ST2000NM0011',
 # #              'TS4_ST1000NM0011','C1_ST3500514NS','TS6_ST32000645NS')
@@ -252,7 +252,7 @@ data.config$dev_class_id <- factor(data.config$dev_class_id)
 # 
 # item <- 'dev_model'
 # stand_class <- 'baseline'
-# title <- 'Q3A_[SNG][QQÏà²á]'
+# title <- 'Q3A_[SNG][QQç›¸å†Œ]'
 # class_suffix <- ''
 # config_item <- tmp
 # item_need <- dm_need
@@ -262,7 +262,7 @@ data.config$dev_class_id <- factor(data.config$dev_class_id)
 # mcf_item_age_Q3A <- mcf_sc(mcf_item_age,stand_class)
 # eval(parse(text = sprintf('p_%s <- mcf_plot(mcf_item_age_Q3A,time_need,title,frac_max,title)',item))) 
 
-# # 8. ·ÖÎöC1,TS4,TS5,TS6Õâ4¸ö»úĞÍµÄdisk model,ÒµÎñÀ´È·¶¨Òª¹Ì¼şµÄ¶ÔÏó
+# # 8. åˆ†æC1,TS4,TS5,TS6è¿™4ä¸ªæœºå‹çš„disk model,ä¸šåŠ¡æ¥ç¡®å®šè¦å›ºä»¶çš„å¯¹è±¡
 # tmp <- subset(data.config,!is.na(disk_c))
 # tmp$dbm <- paste(tmp$dev_class_id,tmp$bs1,tmp$disk_model,sep='_')
 # tmp$dm <- paste(tmp$dev_class_id,tmp$disk_model,sep='_')
@@ -309,12 +309,12 @@ data.config$dev_class_id <- factor(data.config$dev_class_id)
 #   eval(parse(text = sprintf('p_%s <- mcf_plot(mcf_item_age_Q3B,time_need,title,frac_max,title)',item))) 
 # }
 
-# 9. ÌáÈ¡14Äê6ÔÂ7ÔÂ4»úĞÍµÄ¹ÊÕÏ
+# 9. æå–14å¹´6æœˆ7æœˆ4æœºå‹çš„æ•…éšœ
 d <- c('C1','C1','C1','TS4','TS4','TS4','TS4','TS4','TS5','TS6','TS6')
-b <- c('ÊÖ»úQQ','ä¯ÀÀÆ÷','[N][Qzone]','[MIG][QQµçÄÔ¹Ü¼Ò]','[OMG][ÌÚÑ¶ÊÓÆµ]','[SNG][QQÏà²á]','[TEG][´óÎÄ¼şFTN]','[CDG][QQÓÊ¼ş]',
-       'Êı¾İ²Ö¿â','[OMG][ÌÚÑ¶ÊÓÆµ]','[SNG][QQÏà²á]')
-# 9.1 È¡¸÷»úĞÍ+ÒµÎñ100Ì¨»úÆ÷Êı¾İ(´Ó14Äê67ÔÂµÄ7000Ì¨»úÆ÷ÖĞÌáÈ¡)
-# 9.1.1 ¶ÁÈ¡7000Ì¨»úÆ÷µÄsvridÊı¾İ
+b <- c('æ‰‹æœºQQ','æµè§ˆå™¨','[N][Qzone]','[MIG][QQç”µè„‘ç®¡å®¶]','[OMG][è…¾è®¯è§†é¢‘]','[SNG][QQç›¸å†Œ]','[TEG][å¤§æ–‡ä»¶FTN]','[CDG][QQé‚®ä»¶]',
+       'æ•°æ®ä»“åº“','[OMG][è…¾è®¯è§†é¢‘]','[SNG][QQç›¸å†Œ]')
+# 9.1 å–å„æœºå‹+ä¸šåŠ¡100å°æœºå™¨æ•°æ®(ä»14å¹´67æœˆçš„7000å°æœºå™¨ä¸­æå–)
+# 9.1.1 è¯»å–7000å°æœºå™¨çš„svridæ•°æ®
 svrid_db <- read.csv('D:/Data/attrid/attr9020.csv')
 svrid_db <- merge(svrid_db,cmdb[,c('svr_asset_id','dev_class_id','bs1')],
                   by.x = 'svrid',by.y = 'svr_asset_id')
@@ -331,7 +331,7 @@ for (i in 2:length(d)){
 }
 write.csv(svrid_need['svrid'],file = 'D:/Data/attrid/130Ksvrid_need.csv',row.names = F)
 
-# 9.2 ¹ÊÕÏÊı¾İ
+# 9.2 æ•…éšœæ•°æ®
 bad_io <- subset(data.config,dev_class_id == d[1] & bs1 == b[1] &
                    dup == T & ol_time_fail != -1 & 
                    f_time >= as.POSIXct('2014-06-01') & f_time <= as.POSIXct('2014-08-01'))

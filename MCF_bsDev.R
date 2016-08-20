@@ -1,4 +1,4 @@
-# »ùÓÚ»úĞÍºÍÒµÎñµÄÅäÖÃÏà¹ØÎÊÌâµÄ´¦Àí.
+# åŸºäºæœºå‹å’Œä¸šåŠ¡çš„é…ç½®ç›¸å…³é—®é¢˜çš„å¤„ç†.
 rm(list = ls())
 require(ggplot2)
 source('MCF_function.R')
@@ -17,9 +17,9 @@ dev_need <- c('TS1','TS4','TS5','TS6','TS8',
               'C1','M1',
               'A1','A5',
               'B6','B5')
-bs1_need <- c('CC_LOL','Î¢ĞÅ','[ÌÚÑ¶ÔÆ]','CC_´©Ô½»ğÏß','[N][Qzone]',
-              'matrixĞéÄâ»¯ÔËÓªÖ§³Å','[SNG][QQÏà²á]','ÊÖ»úQQ','Êı¾İ²Ö¿â',
-              '[TEG][ÔÆ´æ´¢]')
+bs1_need <- c('CC_LOL','å¾®ä¿¡','[è…¾è®¯äº‘]','CC_ç©¿è¶Šç«çº¿','[N][Qzone]',
+              'matrixè™šæ‹ŸåŒ–è¿è¥æ”¯æ’‘','[SNG][QQç›¸å†Œ]','æ‰‹æœºQQ','æ•°æ®ä»“åº“',
+              '[TEG][äº‘å­˜å‚¨]')
 data.config$bs1 <- cmdb$bs1[match(data.config$ip,cmdb$ip)]
 data.config$bs3 <- cmdb$bs3[match(data.config$ip,cmdb$ip)]
 cmdb <- subset(cmdb,use_time > as.POSIXct('2010-01-01'))
@@ -31,16 +31,16 @@ tmp1 <- paste(data.config$dev_class_id,data.config$bs1,sep='_')
 tmp2 <- sort(table(tmp1))
 tmp2 <- tmp2[tmp2>500]
 
-# 1. [SNG][QQÏà²á]ÔÚC1,B6,TS1,TS4,TS6,TS8,A5ÖĞµÄMCF
+# 1. [SNG][QQç›¸å†Œ]åœ¨C1,B6,TS1,TS4,TS6,TS8,A5ä¸­çš„MCF
 tmp_dev <- c('C1','B6','A5',
              'TS4','TS6','TS8')
-tmp_bs1 <- '[SNG][QQÏà²á]'
+tmp_bs1 <- '[SNG][QQç›¸å†Œ]'
 
 item <- 'dev_class_id'
 class_suffix <- ''
-title <- 'P1_bs1_QQÏà²á'
+title <- 'P1_bs1_QQç›¸å†Œ'
 stand_class <- 'baseline'
-config_item <- subset(data.config,bs1 == '[SNG][QQÏà²á]')
+config_item <- subset(data.config,bs1 == '[SNG][QQç›¸å†Œ]')
 item_need <- tmp_dev
 mcf_item_age <- mcf_all_age
 mcf_item_age <- mcf_merge(mcf_item_age,item,item_need,
@@ -48,12 +48,12 @@ mcf_item_age <- mcf_merge(mcf_item_age,item,item_need,
 mcf_item_age_P1 <- mcf_sc(mcf_item_age,stand_class)
 eval(parse(text = sprintf('p_%s <- mcf_plot(mcf_item_age_P1,time_need,title,frac_max)',item)))
 
-# 2. C1ÖĞSATA2,SATA3ÓëB6µÄSAS½Ó¿ÚµÄ¶Ô±È.Ê¹ÓÃC1+ÌÚÑ¶ÔÆ´ú±ísata2,C1+Î¢ĞÅ´ú±ísata3,B6+ÌÚÑ¶ÔÆ/Î¢ĞÅ/CC_LOL´ú±ísas
+# 2. C1ä¸­SATA2,SATA3ä¸B6çš„SASæ¥å£çš„å¯¹æ¯”.ä½¿ç”¨C1+è…¾è®¯äº‘ä»£è¡¨sata2,C1+å¾®ä¿¡ä»£è¡¨sata3,B6+è…¾è®¯äº‘/å¾®ä¿¡/CC_LOLä»£è¡¨sas
 item <- 'interface'
 class_suffix <- ''
 title <- 'P2_inter'
 stand_class <- 'baseline'
-bs_need <- c('CC_LOL','Î¢ĞÅ','[ÌÚÑ¶ÔÆ]')
+bs_need <- c('CC_LOL','å¾®ä¿¡','[è…¾è®¯äº‘]')
 config_itemA1 <- subset(data.config,dev_class_id == 'C1' & disk_inter == 'SATA2')
 config_itemA2 <- subset(data.config,dev_class_id == 'C1' & disk_inter == 'SATA3')
 config_itemB <- subset(data.config,dev_class_id == 'B6' & bs1 %in% bs_need)
@@ -69,4 +69,4 @@ mcf_item_age <- mcf_merge(mcf_item_age,item,item_need,
 mcf_item_age_P2 <- mcf_sc(mcf_item_age,stand_class)
 eval(parse(text = sprintf('p_%s <- mcf_plot(mcf_item_age_P2,time_need,title,frac_max)',item)))
 
-# 3. ¶Ô¶àÅÌ»úµÄsata2Óësata3½øĞĞ±È½Ï
+# 3. å¯¹å¤šç›˜æœºçš„sata2ä¸sata3è¿›è¡Œæ¯”è¾ƒ

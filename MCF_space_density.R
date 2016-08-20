@@ -1,4 +1,4 @@
-# ¿Õ¼äÓë·şÎñÆ÷ÃÜ¶È·ÖÎö
+# ç©ºé—´ä¸æœåŠ¡å™¨å¯†åº¦åˆ†æ
 rm(list = ls())
 require(ggplot2)
 source('MCF_function.R')
@@ -14,8 +14,8 @@ frac_max <- 0.1
 load(file.path(dir_data,'disk_number_label.Rda'))
 load(file.path(dir_data,'mcf_all_age.Rda'))
 
-# 1. ¸øconfigÌí¼Óf_time,³ÇÊĞ±ê¼Ç,»ú·¿±ê¼Ç,»ú¼Ü±ê¼Ç,µ¶¼Ü±ê¼Ç
-# 1.1. ³ÇÊĞ½âÎö
+# 1. ç»™configæ·»åŠ f_time,åŸå¸‚æ ‡è®°,æœºæˆ¿æ ‡è®°,æœºæ¶æ ‡è®°,åˆ€æ¶æ ‡è®°
+# 1.1. åŸå¸‚è§£æ
 # col_need <- c('svr_id','svr_asset_id','svr_sn','dev_class_id','type_name','model_name','ip',
 #               'dept_id','bs1','bs2','idc_parent_name','idc_name','rack_name','pos_id','pos_name',
 #               'use_time','last_update','raid','svr_version','operator')
@@ -29,15 +29,15 @@ load(file.path(dir_data,'mcf_all_age.Rda'))
 # cmdb_sd$idcp_name <- factor(cmdb_sd$idcp_name)
 # cmdb_sd$idcp_city <- factor(substr(cmdb_sd$idcp_city,1,2))
 # 
-# # 1.2. µ¶¼Ü±ê¼Ç
+# # 1.2. åˆ€æ¶æ ‡è®°
 # tmp <- strsplit(as.character(cmdb_sd$svr_asset_id),'-')
 # cmdb_sd$blade_name <- factor(sapply(tmp,function(x)x[1]))
 # cmdb_sd$blade_pos <- factor(sapply(tmp,function(x)x[2]))
 # 
-# # 1.3. ÒòÎª²»Í¬µÄ»ú·¿¿ÉÄÜÓĞÍ¬ÑùµÄrack_name,ËùÒÔÒª°Ñidc_nameºÍrack_name½áºÏ×÷Îªrack_name
+# # 1.3. å› ä¸ºä¸åŒçš„æœºæˆ¿å¯èƒ½æœ‰åŒæ ·çš„rack_name,æ‰€ä»¥è¦æŠŠidc_nameå’Œrack_nameç»“åˆä½œä¸ºrack_name
 # cmdb_sd$rack_name <- factor(paste(cmdb_sd$idc_name,cmdb_sd$rack_name,sep='_'))
 # 
-# # 1.4. Ìí¼Ó±ê¼Ç
+# # 1.4. æ·»åŠ æ ‡è®°
 # data.config_sd <- merge(data.config,cmdb_sd[c('ip','model_name','dept_id','bs1',
 #                                               'svr_version','idcp_city','idc_name','rack_name',
 #                                               'blade_name','blade_pos','type_name')],
@@ -45,7 +45,7 @@ load(file.path(dir_data,'mcf_all_age.Rda'))
 # save(cmdb_sd,data.config_sd,file = file.path(dir_data,'MCF_sd.Rda'))
 load(file.path(dir_data,'MCF_sd.Rda'))
 
-# 1.5. ´¦ÀíÖ®Ç°¶ÔÊ±¼ä½øĞĞ¹ıÂË
+# 1.5. å¤„ç†ä¹‹å‰å¯¹æ—¶é—´è¿›è¡Œè¿‡æ»¤
 dev_need <- c('TS4','TS6',
               'C1','X2',
               'A1','A5',
@@ -54,16 +54,16 @@ cmdb_sd <- subset(cmdb_sd,use_time > as.POSIXct('2010-01-01') & dev_class_id %in
 data.config_sd <- subset(data.config_sd,use_time > as.POSIXct('2010-01-01') & dev_class_id %in% dev_need)
 
 
-# 2. ³ÇÊĞ¶Ô´æ´¢ÏµÍ³¹ÊÕÏµÄÓ°Ïì(Q12A)
+# 2. åŸå¸‚å¯¹å­˜å‚¨ç³»ç»Ÿæ•…éšœçš„å½±å“(Q12A)
 item <- 'idcp_city'
 class_suffix <- ''
 title <- 'Q12_City'
 stand_class <- 'baseline'
 eval(parse(text = sprintf('config_item <- subset(data.config_sd,!is.na(%s))',item)))
-# item_need <- c('ÉîÛÚ','ÉÏº£','Ìì½ò','¹ãÖİ','¶«İ¸','³É¶¼',
-#                'º¼Öİ','Î÷°²','¼ÃÄÏ','ÄÏ¾©','ÉÇÍ·','Ïã¸Û')
-item_need <- c('ÉîÛÚ','ÉÏº£','Ìì½ò','¹ãÖİ','³É¶¼',
-               'Î÷°²')
+# item_need <- c('æ·±åœ³','ä¸Šæµ·','å¤©æ´¥','å¹¿å·','ä¸œè','æˆéƒ½',
+#                'æ­å·','è¥¿å®‰','æµå—','å—äº¬','æ±•å¤´','é¦™æ¸¯')
+item_need <- c('æ·±åœ³','ä¸Šæµ·','å¤©æ´¥','å¹¿å·','æˆéƒ½',
+               'è¥¿å®‰')
 
 mcf_item_age <- mcf_all_age
 mcf_item_age <- mcf_merge(mcf_item_age,item,item_need,
@@ -71,7 +71,7 @@ mcf_item_age <- mcf_merge(mcf_item_age,item,item_need,
 mcf_item_age_Q12 <- mcf_sc(mcf_item_age,stand_class)
 eval(parse(text = sprintf('p_%s <- mcf_plot(mcf_item_age_Q12,time_need,title,frac_max)',item)))
 
-# 3. ²»Í¬type_name¶Ô´æ´¢ÏµÍ³¹ÊÕÏµÄÓ°Ïì(Q13)
+# 3. ä¸åŒtype_nameå¯¹å­˜å‚¨ç³»ç»Ÿæ•…éšœçš„å½±å“(Q13)
 item <- 'type_name'
 class_suffix <- ''
 title <- 'Q13_box'
@@ -84,8 +84,8 @@ mcf_item_age <- mcf_merge(mcf_item_age,item,item_need,
 mcf_item_age_Q13<- mcf_sc(mcf_item_age,stand_class)
 eval(parse(text = sprintf('p_%s <- mcf_plot(mcf_item_age_Q13,time_need,title,frac_max)',item)))
 
-# 4. ÑéÖ¤¸÷»úĞÍÅäÖÃµÄÓ²ÅÌÊıÓësmart¶ÔÓ¦µÄÓ²ÅÌÊıµÄ²îÒì.²¢È¡²¿·ÖÖ÷Òª»úĞÍ½øĞĞ´¦Àí
-dev_config <- read.csv(file.path(dir_data,'¸÷»úĞÍÅäÖÃ.csv'))
+# 4. éªŒè¯å„æœºå‹é…ç½®çš„ç¡¬ç›˜æ•°ä¸smartå¯¹åº”çš„ç¡¬ç›˜æ•°çš„å·®å¼‚.å¹¶å–éƒ¨åˆ†ä¸»è¦æœºå‹è¿›è¡Œå¤„ç†
+dev_config <- read.csv(file.path(dir_data,'å„æœºå‹é…ç½®.csv'))
 names(dev_config) <- c('dev_class_id','cpu_core','memory','total',
                        'disk_c','capacity','interface','raid','ssd_c','capacity_sdd')
 dev_config <- subset(dev_config,,c('dev_class_id','disk_c','total','capacity'))
@@ -93,8 +93,8 @@ t <- subset(data.config_sd,dup == T)
 t$dev_class_id <- factor(t$dev_class_id)
 t1 <- subset(t,!is.na(t$disk_c))
 
-# 4.1. Ã¿Ò»Ïî·Ö±ğÎª: »úĞÍ,»úĞÍ»úÆ÷×ÜÊı,»úĞÍÓĞÓ²ÅÌĞÅÏ¢×ÜÊı,ÓĞÓ²ÅÌĞÅÏ¢µÄÓ²ÅÌÊıÖĞÕ¼±È×î¸ßµÄÓ²ÅÌÊı,
-# ¸ÃÓ²ÅÌÊıµÄ»úÆ÷ÊıÁ¿
+# 4.1. æ¯ä¸€é¡¹åˆ†åˆ«ä¸º: æœºå‹,æœºå‹æœºå™¨æ€»æ•°,æœºå‹æœ‰ç¡¬ç›˜ä¿¡æ¯æ€»æ•°,æœ‰ç¡¬ç›˜ä¿¡æ¯çš„ç¡¬ç›˜æ•°ä¸­å æ¯”æœ€é«˜çš„ç¡¬ç›˜æ•°,
+# è¯¥ç¡¬ç›˜æ•°çš„æœºå™¨æ•°é‡
 dev_sta <- data.frame(dev_class_id = levels(t$dev_class_id),
                       count = tapply(t$disk_c,t$dev_class_id,length),
                       disk_info_c = tapply(t$disk_c,t$dev_class_id,function(x)sum(!is.na(x))),
@@ -113,7 +113,7 @@ dev_sta <- dev_sta[order(dev_sta$cover_rate),]
 dev_sta <- subset(dev_sta,count >= 100)
 dev_merge <- merge(dev_sta,dev_config,by = 'dev_class_id',all.x = T)
 dev_merge <- dev_merge[order(dev_merge$cover_rate),]
-# 4.2. È·¶¨´¦Àí»úĞÍ
+# 4.2. ç¡®å®šå¤„ç†æœºå‹
 dev_need <- c('TS3','TS4','TS5','TS6',
               'C1','X2',
               'A1','A5',
@@ -121,20 +121,20 @@ dev_need <- c('TS3','TS4','TS5','TS6',
 dev_info <- subset(dev_config, 
                    dev_class_id %in% dev_need & 
                      !(dev_class_id == 'TS6' & capacity == 300))
-# 4.3. ¸øÈ·¶¨»úĞÍÌí¼ÓÓ²ÅÌÊı
+# 4.3. ç»™ç¡®å®šæœºå‹æ·»åŠ ç¡¬ç›˜æ•°
 data.config_sd_dev <- subset(data.config_sd,dev_class_id %in% dev_need)
 data.config_sd_dev$disk_cNew <- dev_info$disk_c[match(data.config_sd_dev$dev_class_id,dev_info$dev_class_id)]
 data.config_sd_dev$totalNew <- dev_info$total[match(data.config_sd_dev$dev_class_id,dev_info$dev_class_id)]
 
 
-# 5. »ú¹ñÊı¾İ·ÖÎö 
+# 5. æœºæŸœæ•°æ®åˆ†æ 
 ori <- '1970-01-01'
 tmp <- data.config_sd_dev
 tmp$ol_time[duplicated(tmp$ip)] <- -1
 names(tmp)[names(tmp) == 'rack_name'] <- 't'
 tmp$t <- factor(tmp$t)
 
-# 5.1 Ã¿¸ö»ú¹ñÊı¾İ»ã×Ü
+# 5.1 æ¯ä¸ªæœºæŸœæ•°æ®æ±‡æ€»
 tmp1 <- data.frame(name = levels(tmp$t),
                    max = as.POSIXct(as.numeric(tapply(tmp$use_time,tmp$t,max)),origin = ori),
                    min = as.POSIXct(as.numeric(tapply(tmp$use_time,tmp$t,min)),origin = ori),
@@ -165,7 +165,7 @@ rack_sta <- tmp1
 ggplot(subset(rack_sta,fcount>0)) + geom_point(aes(x =mean_ol_time ,y = disk_C, 
                                                    alpha = fcount, size = fcount))
 
-# 5.2 ²»Í¬»úÆ÷ÊıµÄ»ú¹ñÊı¾İ»ã×Ü
+# 5.2 ä¸åŒæœºå™¨æ•°çš„æœºæŸœæ•°æ®æ±‡æ€»
 rack_densitym <- data.frame(density = as.numeric(levels(tmp1$count)),
                             count = as.numeric(tapply(tmp1$count,tmp1$count,length)),
                             fcount = as.numeric(tapply(tmp1$fcount,tmp1$count,sum)),
@@ -187,7 +187,7 @@ limits <- aes(ymax = up, ymin = down)
 p <- ggplot(rack_densitym, aes(x = density, y = mean_afr))
 p + geom_bar(stat = 'identity') + geom_errorbar(limits,width=0.25)
 
-# 5.3 ²»Í¬Ó²ÅÌÊıµÄ»ú¹ñÊı¾İ»ã×Ü
+# 5.3 ä¸åŒç¡¬ç›˜æ•°çš„æœºæŸœæ•°æ®æ±‡æ€»
 rack_densityd <- data.frame(density = as.numeric(levels(tmp1$disk_c)),
                             count = as.numeric(tapply(tmp1$disk_c,tmp1$disk_c,length)),
                             fcount = as.numeric(tapply(tmp1$fcount,tmp1$disk_c,sum)),
@@ -209,13 +209,13 @@ limits <- aes(ymax = up, ymin = down)
 p <- ggplot(rack_densityd, aes(x = density, y = mean_afr)) + geom_bar(stat = 'identity')
 p + geom_errorbar(limits,width=0.25)
 
-# 5.4 ·ÖÎö»úÆ÷ÃÜ¶ÈÎª12,20,40Èı¸öÀàĞÍ»ú¹ñµÄ¹ÊÕÏÂÊ²îÒì
+# 5.4 åˆ†ææœºå™¨å¯†åº¦ä¸º12,20,40ä¸‰ä¸ªç±»å‹æœºæŸœçš„æ•…éšœç‡å·®å¼‚
 rd_need <- subset(rack_densitym, density %in% c(12,20,40))
 rackA <- subset(rack_sta,count == 12)
 rackB <- subset(rack_sta,count == 20)
 rackC <- subset(rack_sta,count == 40)
 
-# 5.5 Ó²ÅÌÃÜ¶ÈÓë»úÆ÷ÃÜ¶È·Ö²¼Í¼
+# 5.5 ç¡¬ç›˜å¯†åº¦ä¸æœºå™¨å¯†åº¦åˆ†å¸ƒå›¾
 tmp <- data.frame(count = as.numeric(levels(rack_sta$count)[rack_sta$count]),
                   disk_c = as.numeric(rack_sta$disk_c))
 tmp$cdc <- paste(tmp$count,tmp$disk_c,sep='_')
@@ -230,9 +230,9 @@ tmp1$disk_c <- as.numeric(levels(tmp2$X2)[tmp2$X2])
 
 ggplot(tmp1,aes(x = count,y = disk_c,size = c)) + geom_point()
 
-# 6. ÒµÎñÔÚ²»Í¬µÄÎ»ÖÃµÄ»úÆ÷Êı
-item_need <- c('ÉîÛÚ','ÉÏº£','Ìì½ò','¹ãÖİ','¶«İ¸','³É¶¼',
-               'º¼Öİ','Î÷°²','¼ÃÄÏ','ÄÏ¾©','ÉÇÍ·','Ïã¸Û')
+# 6. ä¸šåŠ¡åœ¨ä¸åŒçš„ä½ç½®çš„æœºå™¨æ•°
+item_need <- c('æ·±åœ³','ä¸Šæµ·','å¤©æ´¥','å¹¿å·','ä¸œè','æˆéƒ½',
+               'æ­å·','è¥¿å®‰','æµå—','å—äº¬','æ±•å¤´','é¦™æ¸¯')
 tmp <- subset(cmdb_sd,idcp_city %in% item_need)
 tmp$idcp_city <- factor(tmp$idcp_city)
 tmp$bs1 <- factor(tmp$bs1)
@@ -247,12 +247,12 @@ tmp2$not0 <- sapply(1:nrow(tmp2),function(x){
 })
 tmp3 <- subset(tmp2,not0 >= 8)
 
-# 7. ¸÷³ÇÊĞ¿ÕÆøÖÊÁ¿Óëafr¶Ô±È
+# 7. å„åŸå¸‚ç©ºæ°”è´¨é‡ä¸afrå¯¹æ¯”
 date_seq <- seq.Date(as.Date('2010-01-01'),as.Date('2013-01-01'),'4 years')
-item_need <- c('ÉîÛÚ','ÉÏº£','Ìì½ò','¹ãÖİ','³É¶¼','º¼Öİ','Î÷°²','¼ÃÄÏ')
+item_need <- c('æ·±åœ³','ä¸Šæµ·','å¤©æ´¥','å¹¿å·','æˆéƒ½','æ­å·','è¥¿å®‰','æµå—')
 require('reshape2')
 
-# # 7.1. ¸÷³ÇÊĞÃ¿¸ö¼¾½ÚµÄ¿ÕÆøÖÊÁ¿Êı¾İ
+# # 7.1. å„åŸå¸‚æ¯ä¸ªå­£èŠ‚çš„ç©ºæ°”è´¨é‡æ•°æ®
 # tmp <- read.csv(file.path(dir_data,'air','aqi.csv'),header = F,encoding = 'UTF-8',sep = ',')
 # names(tmp) <- c('id','zip','city','value','attr','time')
 # aqi <- subset(tmp,city %in% item_need)
@@ -275,7 +275,7 @@ require('reshape2')
 # air_city$time <- date_seq[1:(length(date_seq)-1)]
 # air_city <- setNames(melt(air_city,id.vars = 'time'),c('time','city','value'))
 # 
-# # 7.2. ÇóÃ¿¸ö³ÇÊĞÃ¿¼¾¶ÈµÄ¹ÊÕÏÂÊ.
+# # 7.2. æ±‚æ¯ä¸ªåŸå¸‚æ¯å­£åº¦çš„æ•…éšœç‡.
 # afr_city <- sapply(item_need,function(x){
 #   d <- sapply(date_seq,function(y){
 #     list(subset(data.config_sd,idcp_city == x & 
@@ -301,11 +301,11 @@ require('reshape2')
 # airCity$afr <- afr_city$value
 # airCity <- airCity[order(airCity$city,airCity$value),]
 # ggplot(airCity,aes(x = afr, y = value, color = city)) + geom_point()
-# ggplot(subset(airCity,city == 'ÉîÛÚ'),aes(x = afr, y = value)) + geom_line()
+# ggplot(subset(airCity,city == 'æ·±åœ³'),aes(x = afr, y = value)) + geom_line()
 
-# 7.4 ÁíÒ»·İ¿ÕÆøÖÊÁ¿Í¼ (Q12B)
+# 7.4 å¦ä¸€ä»½ç©ºæ°”è´¨é‡å›¾ (Q12B)
 pm10 <- read.csv(file.path(dir_data,'air','pm10.csv'))
-item_need <- c('ÉîÛÚ','ÉÏº£','Ìì½ò','¹ãÖİ','³É¶¼','Î÷°²')
+item_need <- c('æ·±åœ³','ä¸Šæµ·','å¤©æ´¥','å¹¿å·','æˆéƒ½','è¥¿å®‰')
 # pm10$Mean <- pm10$Mean_3year
 pm10 <- within(pm10,city <- factor(city,levels = city[order(Mean_3year)]))
 p_Q12 <- ggplot(subset(pm10,city %in% item_need),aes(x = city, y = Mean)) + 
